@@ -127,17 +127,18 @@
     </div>
 
     <div class="uke-section">
-        <h2 style="color:#e0c0a0; margin-bottom:15px;">Ukelele</h2>
-        <div class="chord-selectors">
-            <button class="chord-btn active" onclick="setChord('C')">C</button>
-            <button class="chord-btn" onclick="setChord('G')">G</button>
-            <button class="chord-btn" onclick="setChord('F')">F</button>
-            <button class="chord-btn" onclick="setChord('Am')">Am</button>
-            <button class="chord-btn" onclick="setChord('Dm')">Dm</button>
-            <button class="chord-btn" onclick="setChord('Em')">Em</button>
-            <button class="chord-btn" onclick="setChord('A')">A</button>
-            <button class="chord-btn" onclick="setChord('E7')">E7</button>
-        </div>
+        <h2 style="color:#e0c0a0; margin-bottom:15px; font-family: 'Georgia', serif;">Ukelele Pro 🎸</h2>
+<div class="chord-selectors">
+    <button class="chord-btn active" onclick="setChord('C')">C</button>
+    <button class="chord-btn" onclick="setChord('G')">G</button>
+    <button class="chord-btn" onclick="setChord('F')">F</button>
+    <button class="chord-btn" onclick="setChord('Am')">Am</button>
+    
+    <button class="chord-btn" onclick="setChord('Dm')">Dm</button>
+    <button class="chord-btn" onclick="setChord('Em')">Em</button>
+    <button class="chord-btn" onclick="setChord('A')">A</button>
+    <button class="chord-btn" onclick="setChord('D')">D</button> <button class="chord-btn" onclick="setChord('E7')">E7</button>
+    <button class="chord-btn" onclick="setChord('G7')">G7</button> <button class="chord-btn" onclick="setChord('C7')">C7</button> <button class="chord-btn" onclick="setChord('Bb')">Bb</button> </div>
         
         <div class="fretboard" id="fretboard">
             <div class="fret-line" style="left: 25%"></div>
@@ -219,17 +220,26 @@
         // Frecuencias base [A4, E4, C4, G4]
         const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
         // Mapa de acordes [Traste A, Traste E, Traste C, Traste G]
-        const chords = {
-            'C':  [3, 0, 0, 0],
-            'G':  [2, 3, 2, 0],
-            'F':  [0, 1, 0, 2],
-            'Am': [0, 0, 0, 2],
-            // Nuevos acordes
-            'Dm': [0, 1, 2, 2],
-            'Em': [2, 3, 4, 0],
-            'A':  [0, 0, 1, 2],
-            'E7': [2, 0, 2, 1]
-        };
+        // REEMPLAZA LA VARIABLE const chords EN EL SCRIPT POR ESTA:
+const chords = {
+    // Básicos
+    'C':  [3, 0, 0, 0], // Do Mayor
+    'G':  [2, 3, 2, 0], // Sol Mayor
+    'F':  [0, 1, 0, 2], // Fa Mayor
+    'Am': [0, 0, 0, 2], // La Menor
+    
+    // Nivel 2
+    'Dm': [0, 1, 2, 2], // Re Menor
+    'Em': [2, 3, 4, 0], // Mi Menor
+    'A':  [0, 0, 1, 2], // La Mayor
+    'D':  [0, 2, 2, 2], // Re Mayor (NUEVO)
+    
+    // Especiales
+    'E7': [2, 0, 2, 1], // Mi 7
+    'G7': [2, 1, 2, 0], // Sol 7 (NUEVO - Muy usado en blues/pop)
+    'C7': [1, 0, 0, 0], // Do 7 (NUEVO - Suena muy 'hawaiano')
+    'Bb': [1, 1, 2, 3]  // Si Bemol (NUEVO - Un poco más difícil, cejilla)
+};
         let currentShape = chords['C'];
 
         function setChord(name) {
