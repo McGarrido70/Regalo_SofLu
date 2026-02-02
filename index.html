@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Universo de Sofi</title>
+    <title>El Universo de Sofilu</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
     <style>
-        /* --- ESTILOS GENERALES (Igual que antes) --- */
+        /* --- ESTILOS GENERALES --- */
         body { 
             margin: 0; 
-            background-color: #000; /* Fondo negro total */
+            background-color: #000; 
             color: white; 
             font-family: 'Arial', sans-serif; 
             overflow-x: hidden;
@@ -19,30 +19,29 @@
         /* --- EL RECTÁNGULO 3D --- */
         #scene-container {
             width: 80%;
-            height: 500px; /* Un poco más alto para apreciar mejor el 3D */
+            height: 500px;
             margin: 50px auto;
             position: relative;
             border: 2px solid #333;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(255, 0, 222, 0.2); /* Un brillo sutil rosa */
-            cursor: grab; /* Icono de manito para indicar que se puede mover */
+            /* Un brillo sutil púrpura/rosa */
+            box-shadow: 0 0 30px rgba(212, 0, 255, 0.2); 
+            cursor: grab;
         }
         
-        #scene-container:active {
-            cursor: grabbing;
-        }
+        #scene-container:active { cursor: grabbing; }
 
-        /* Instrucción pequeña sobre el rectángulo */
         .instruction {
             text-align: center;
-            color: #888;
-            font-size: 0.9rem;
+            color: #aaa;
+            font-size: 0.95rem;
             margin-top: -40px;
             margin-bottom: 50px;
+            padding: 0 20px;
         }
 
-        /* --- SECCIÓN INFERIOR (Igual que antes) --- */
+        /* --- SECCIÓN INFERIOR --- */
         .bottom-section {
             display: flex;
             justify-content: space-between;
@@ -59,10 +58,9 @@
             border-radius: 15px;
         }
 
-        h2 { color: #ff00de; margin-top: 0; }
+        h2 { color: #d400ff; margin-top: 0; } /* Color a juego con el brillo */
         p { line-height: 1.8; color: #ccc; }
 
-        /* Estilo para tus imágenes */
         .card img {
             width: 100%;
             border-radius: 10px;
@@ -79,150 +77,127 @@
 </head>
 <body>
 
-    <div id="scene-container">
-        </div>
-    <p class="instruction">✨ Arrastra para girar la vista 360° y buscar la constelación ✨</p>
+    <div id="scene-container"></div>
+    <p class="instruction">✨ El universo ha escondido tu nombre. Gira en todas direcciones para encontrar la constelación "SOFILU" ✨</p>
 
     <div class="bottom-section">
-        
         <div class="card">
-            <h2>Para mi estrella</h2>
-            <p>He capturado un pedazo del universo para ti. Arriba puedes viajar por él.</p>
-            <p>Hay una constelación única escondida en ese cielo que lleva tu nombre. ¿Puedes encontrar el ángulo donde las estrellas se alinean?</p>
-             </div>
+            <h2>Para Sofilu</h2>
+            <p>He capturado un pedazo del espacio para ti. Pero esta vez, las estrellas están jugando a las escondidas.</p>
+            <p>Tu nombre está ahí arriba, formado por estrellas especiales, pero está perdido en el caos. Tendrás que buscar el ángulo perfecto para verlo.</p>
+        </div>
 
         <div class="card">
             <h2>Nuestros Recuerdos</h2>
-            <p>Aquí puedes escribir más cosas, poner fechas importantes o lo que sientas.</p>
-            <p>Cada punto brillante ahí arriba es un buen momento que hemos pasado juntos.</p>
+            <p>Si recargas la página, la constelación se moverá a otro lugar diferente. Es un universo infinito, como lo que siento por ti.</p>
         </div>
-
     </div>
 
     <script>
         let camera, scene, renderer, controls;
         const container = document.getElementById('scene-container');
+        let targetConstellation; // Variable global para la constelación
 
         init();
         animate();
 
         function init() {
-            // 1. Crear la escena (el espacio vacío)
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.0008);
+            scene.fog = new THREE.FogExp2(0x000000, 0.001);
 
-            // 2. Crear la cámara
-            const fov = 60; // Campo de visión
+            const fov = 60;
             const aspect = container.clientWidth / container.clientHeight;
             const near = 0.1;
             const far = 2000;
             camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-            camera.position.z = 500; // Posición inicial de la cámara
+            camera.position.z = 600; // Un poco más lejos para empezar
 
-            // 3. El Renderizador (lo que dibuja en pantalla)
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
 
-            // 4. Controles (OrbitControls para mover con el mouse/dedo)
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; // Movimiento suave
+            controls.enableDamping = true;
             controls.dampingFactor = 0.05;
-            controls.enableZoom = false;  // Desactivar zoom para que no se salgan del rectángulo
-            controls.enablePan = false;   // Desactivar paneo
-            controls.autoRotate = true;   // Rotación automática suave al inicio
-            controls.autoRotateSpeed = 0.5;
+            controls.enableZoom = false;
+            controls.enablePan = false;
+            // Quitamos la rotación automática para que no maree al buscar
+            controls.autoRotate = false; 
 
-            // Si el usuario interactúa, paramos la rotación automática
-            controls.addEventListener('start', function(){
-                controls.autoRotate = false;
-            });
-
-            // 5. Agregar elementos
             addBackgroundStars();
-            createSofiConstellation();
+            createSofiluConstellation(); // Llamamos a la nueva función
 
-            // Manejar el redimensionamiento de la ventana
             window.addEventListener('resize', onWindowResize);
         }
 
         function addBackgroundStars() {
             const geometry = new THREE.BufferGeometry();
             const vertices = [];
-            const materials = [];
-
-            // Generar 3000 estrellas aleatorias
-            for (let i = 0; i < 3000; i++) {
-                const x = THREE.MathUtils.randFloatSpread(2000);
-                const y = THREE.MathUtils.randFloatSpread(2000);
-                const z = THREE.MathUtils.randFloatSpread(2000);
+            for (let i = 0; i < 4000; i++) { // Un poco más de estrellas de fondo
+                const x = THREE.MathUtils.randFloatSpread(2500);
+                const y = THREE.MathUtils.randFloatSpread(2500);
+                const z = THREE.MathUtils.randFloatSpread(2500);
                 vertices.push(x, y, z);
             }
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-            
-            // Material de las estrellas (puntos blancos pequeños)
-            const material = new THREE.PointsMaterial({ color: 0x888888, size: 2, sizeAttenuation: true });
+            const material = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 1.5, sizeAttenuation: true });
             const starField = new THREE.Points(geometry, material);
             scene.add(starField);
         }
 
-        function createSofiConstellation() {
-            const material = new THREE.LineBasicMaterial({ color: 0xff00de, opacity: 0.6, transparent: true });
-            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 5, sizeAttenuation: true });
+        // FUNCIÓN NUEVA PARA "SOFILU"
+        function createSofiluConstellation() {
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xd400ff, opacity: 0.7, transparent: true });
+            const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 6, sizeAttenuation: true });
             
-            // Coordenadas aproximadas para las letras S O F I en un plano 2D (Z=0)
             const points = [];
-            
-            // S
-            points.push(new THREE.Vector3( -150, 60, 0 ));
-            points.push(new THREE.Vector3( -100, 60, 0 ));
-            points.push(new THREE.Vector3( -100, 0, 0 ));
-            points.push(new THREE.Vector3( -150, 0, 0 ));
-            points.push(new THREE.Vector3( -150, -60, 0 ));
-            points.push(new THREE.Vector3( -100, -60, 0 ));
-            
-            // O (Salto)
-            points.push(new THREE.Vector3( -50, 60, 0 )); 
-            points.push(new THREE.Vector3( 0, 60, 0 ));
-            points.push(new THREE.Vector3( 0, -60, 0 ));
-            points.push(new THREE.Vector3( -50, -60, 0 ));
-            points.push(new THREE.Vector3( -50, 60, 0 )); // Cerrar la O
+            const h = 50; // Altura media de letras
+            const w = 40; // Ancho medio de letras
+            const gap = 20; // Espacio entre letras
 
-            // F (Salto)
-            points.push(new THREE.Vector3( 50, 60, 0 ));
-            points.push(new THREE.Vector3( 50, -60, 0 ));
-            points.push(new THREE.Vector3( 50, 0, 0 )); // Vuelta al centro
-            points.push(new THREE.Vector3( 90, 0, 0 ));
-            points.push(new THREE.Vector3( 50, 0, 0 )); // Vuelta al centro
-            points.push(new THREE.Vector3( 50, 60, 0 )); // Vuelta arriba
-            points.push(new THREE.Vector3( 100, 60, 0 ));
+            // Definir coordenadas para SOFILU (dibujando línea por línea)
+            // S (Empieza en X = -220 aprox)
+            points.push(new THREE.Vector3(-220, h, 0), new THREE.Vector3(-180, h, 0), new THREE.Vector3(-180, 0, 0), new THREE.Vector3(-220, 0, 0), new THREE.Vector3(-220, -h, 0), new THREE.Vector3(-180, -h, 0));
+            // O
+            points.push(new THREE.Vector3(-140, h, 0), new THREE.Vector3(-100, h, 0), new THREE.Vector3(-100, -h, 0), new THREE.Vector3(-140, -h, 0), new THREE.Vector3(-140, h, 0));
+            // F
+            points.push(new THREE.Vector3(-80, -h, 0), new THREE.Vector3(-80, h, 0), new THREE.Vector3(-40, h, 0));
+            points.push(new THREE.Vector3(-80, 0, 0), new THREE.Vector3(-50, 0, 0)); // Palito del medio de la F
+            // I
+            points.push(new THREE.Vector3(-10, h, 0), new THREE.Vector3(-10, -h, 0));
+            // L
+            points.push(new THREE.Vector3(20, h, 0), new THREE.Vector3(20, -h, 0), new THREE.Vector3(60, -h, 0));
+            // U (Termina en X = 160 aprox)
+            points.push(new THREE.Vector3(100, h, 0), new THREE.Vector3(100, -h, 0), new THREE.Vector3(140, -h, 0), new THREE.Vector3(140, h, 0));
 
-            // I (Salto)
-            points.push(new THREE.Vector3( 150, 60, 0 ));
-            points.push(new THREE.Vector3( 150, -60, 0 ));
-            
-            // Crear las líneas que unen las estrellas
+            // Crear geometrías
             const geometry = new THREE.BufferGeometry().setFromPoints(points);
-            const line = new THREE.Line(geometry, material);
-            // Centramos la constelación
-            line.position.x = 20; 
+            const line = new THREE.LineSegments(geometry, lineMaterial); // Usamos LineSegments para cortes limpios
+            const nameStars = new THREE.Points(geometry, starMaterial);
 
-            // Crear los puntos brillantes en los vértices
-            const starGeo = new THREE.BufferGeometry().setFromPoints(points);
-            const nameStars = new THREE.Points(starGeo, starMaterial);
-            nameStars.position.x = 20;
+            // Agrupar
+            targetConstellation = new THREE.Group();
+            targetConstellation.add(line);
+            targetConstellation.add(nameStars);
 
-            // Agrupar y añadir a la escena
-            const constellationGroup = new THREE.Group();
-            constellationGroup.add(line);
-            constellationGroup.add(nameStars);
+            // --- AQUÍ ESTÁ LA MAGIA DE LA ALEATORIEDAD ---
             
-            // Un pequeño truco: inclinamos el grupo ligeramente para que no se vea perfecto de entrada
-            constellationGroup.rotation.x = 0.2;
-            constellationGroup.rotation.y = -0.1;
+            // 1. Rotación aleatoria total en los 3 ejes (0 a 360 grados)
+            targetConstellation.rotation.x = Math.random() * Math.PI * 2;
+            targetConstellation.rotation.y = Math.random() * Math.PI * 2;
+            targetConstellation.rotation.z = Math.random() * Math.PI * 2;
 
-            scene.add(constellationGroup);
+            // 2. Posición aleatoria (desplazarla del centro)
+            // Rango de dispersión: entre -400 y 400 unidades en cada eje
+            const spread = 800; 
+            targetConstellation.position.set(
+                THREE.MathUtils.randFloatSpread(spread),
+                THREE.MathUtils.randFloatSpread(spread),
+                THREE.MathUtils.randFloatSpread(spread)
+            );
+
+            scene.add(targetConstellation);
         }
 
         function onWindowResize() {
@@ -233,7 +208,7 @@
 
         function animate() {
             requestAnimationFrame(animate);
-            controls.update(); // Necesario si se usa autoRotate o damping
+            controls.update();
             renderer.render(scene, camera);
         }
     </script>
