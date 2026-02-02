@@ -58,7 +58,7 @@
             text-align: center; background: #2a1b0e; padding: 20px;
             border-radius: 20px; border: 4px solid #4a3018;
             box-shadow: 0 0 30px rgba(0,0,0,0.5); 
-            touch-action: none; /* Fix para scroll en móvil */
+            touch-action: none;
         }
         .chord-selectors { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .chord-btn {
@@ -80,7 +80,7 @@
         .string.vibrating::before { background: #d400ff; height: 3px; box-shadow: 0 0 10px #d400ff; }
         .finger-dot { position: absolute; width: 16px; height: 16px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; z-index: 20; }
 
-        /* --- TAROT CÓSMICO --- */
+        /* GA-TAROT */
         .tarot-section {
             width: 85%; margin: 0 auto 150px auto;
             text-align: center; background: linear-gradient(135deg, #1a0b2e 0%, #000 100%);
@@ -89,7 +89,7 @@
         }
         .tarot-container {
             perspective: 1000px;
-            width: 220px; height: 340px; margin: 30px auto; cursor: pointer;
+            width: 250px; height: 380px; margin: 30px auto; cursor: pointer;
         }
         .tarot-card {
             width: 100%; height: 100%; position: relative;
@@ -102,7 +102,7 @@
             position: absolute; width: 100%; height: 100%;
             backface-visibility: hidden; border-radius: 15px;
             display: flex; justify-content: center; align-items: center;
-            flex-direction: column;
+            flex-direction: column; overflow: hidden;
         }
         .card-back {
             background: linear-gradient(45deg, #111, #222);
@@ -110,15 +110,22 @@
             background-image: repeating-linear-gradient(45deg, #1a1a1a 25%, transparent 25%, transparent 75%, #1a1a1a 75%, #1a1a1a), repeating-linear-gradient(45deg, #1a1a1a 25%, #0f0f0f 25%, #0f0f0f 75%, #1a1a1a 75%, #1a1a1a);
             background-position: 0 0, 10px 10px; background-size: 20px 20px;
         }
-        .card-back::after { content: '★'; font-size: 4rem; color: #d400ff; text-shadow: 0 0 20px #d400ff; animation: pulse 2s infinite; }
+        .card-back::after { content: '🐾'; font-size: 4rem; color: #d400ff; text-shadow: 0 0 20px #d400ff; animation: pulse 2s infinite; }
         
         .card-front {
             background: #0f0f0f; border: 2px solid #d400ff;
-            transform: rotateY(180deg); padding: 10px; box-sizing: border-box;
+            transform: rotateY(180deg); padding: 15px; box-sizing: border-box;
         }
-        .tarot-icon { font-size: 5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
-        .tarot-name { font-size: 1.5rem; color: #d400ff; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        .tarot-meaning { font-size: 0.9rem; color: #ccc; line-height: 1.4; padding: 0 10px; }
+        
+        .tarot-image-container { 
+            width: 180px; height: 180px; margin-bottom: 15px; 
+            border-radius: 10px; overflow: hidden; 
+            border: 2px solid #d400ff; box-shadow: 0 0 15px rgba(212,0,255,0.4); 
+        }
+        .tarot-image-actual { width: 100%; height: 100%; object-fit: cover; }
+
+        .tarot-name { font-size: 1.4rem; color: #d400ff; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .tarot-meaning { font-size: 0.9rem; color: #ccc; line-height: 1.4; padding: 0 5px; }
         
         @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.5; transform: scale(1); } }
 
@@ -129,6 +136,7 @@
         
         #music-player { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 15, 15, 0.95); border: 1px solid #d400ff; padding: 10px 20px; border-radius: 50px; z-index: 1000; display: flex; align-items: center; gap: 15px; }
         .controls button { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
+        .song-info { font-size: 0.85rem; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d400ff; }
 
         @media (max-width: 768px) {
             .bottom-section { flex-direction: column; }
@@ -151,7 +159,7 @@
         <div class="card">
             <h2>Bienvenida</h2>
             <p>Este es tu rincón especial. Arriba tienes un universo realista para explorar.</p>
-            <p>Abajo, música, un ukelele para practicar y un Tarot mágico.</p>
+            <p>Abajo, música, un ukelele para practicar y el Gran Oráculo Ga-tarot.</p>
         </div>
         <div class="card">
             <h2>Calendario en la Nube</h2>
@@ -175,54 +183,37 @@
             <button class="chord-btn" onclick="setChord('G')">G</button>
             <button class="chord-btn" onclick="setChord('F')">F</button>
             <button class="chord-btn" onclick="setChord('Am')">Am</button>
-            
             <button class="chord-btn" onclick="setChord('Dm')">Dm</button>
             <button class="chord-btn" onclick="setChord('Em')">Em</button>
             <button class="chord-btn" onclick="setChord('A')">A</button>
             <button class="chord-btn" onclick="setChord('D')">D</button>
-            
             <button class="chord-btn" onclick="setChord('E7')">E7</button>
             <button class="chord-btn" onclick="setChord('G7')">G7</button>
             <button class="chord-btn" onclick="setChord('C7')">C7</button>
             <button class="chord-btn" onclick="setChord('Bb')">Bb</button>
         </div>
-        
         <div class="fretboard" id="fretboard">
             <div class="fret-line" style="left: 25%"></div>
             <div class="fret-line" style="left: 50%"></div>
             <div class="fret-line" style="left: 75%"></div>
-            <div class="string" data-s="3" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
-                <div class="finger-dot" style="left:37.5%" data-show="2"></div>
-                <div class="finger-dot" style="left:62.5%" data-show="3"></div>
-                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
-            </div>
-            <div class="string" data-s="2" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
-                <div class="finger-dot" style="left:37.5%" data-show="2"></div>
-                <div class="finger-dot" style="left:62.5%" data-show="3"></div>
-                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
-            </div>
-            <div class="string" data-s="1" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
-                <div class="finger-dot" style="left:37.5%" data-show="2"></div>
-                <div class="finger-dot" style="left:62.5%" data-show="3"></div>
-                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
-            </div>
-            <div class="string" data-s="0" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
-                <div class="finger-dot" style="left:37.5%" data-show="2"></div>
-                <div class="finger-dot" style="left:62.5%" data-show="3"></div>
-                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
-            </div>
+            <div class="string" data-s="3" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
+            <div class="string" data-s="2" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
+            <div class="string" data-s="1" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
+            <div class="string" data-s="0" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
         </div>
     </div>
 
     <div class="tarot-section">
-        <h2>🔮 Oráculo de las Estrellas</h2>
-        <p style="font-size: 0.9rem; color:#aaa;">Toca la carta para revelar tu energía del día</p>
+        <h2>🔮 Ga-Tarot del Día</h2>
+        <p style="font-size: 0.9rem; color:#aaa;">Toca la carta para ver qué dicen los michis hoy</p>
         
         <div class="tarot-container" onclick="flipCard()">
             <div class="tarot-card" id="dailyCard">
                 <div class="card-face card-back"></div>
                 <div class="card-face card-front">
-                    <div class="tarot-icon" id="tarotIcon"></div>
+                    <div class="tarot-image-container">
+                        <img id="tarotImageSrc" class="tarot-image-actual" src="" alt="Michi Tarot">
+                    </div>
                     <div class="tarot-name" id="tarotName"></div>
                     <div class="tarot-meaning" id="tarotMeaning"></div>
                 </div>
@@ -272,10 +263,10 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('start-screen').style.opacity = '0';
             setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; }, 1000);
-            init3D(); // Iniciar el universo realista
+            init3D();
         }
 
-        // --- 3. UKELELE LÓGICA (12 ACORDES) ---
+        // --- 3. UKELELE LÓGICA ---
         const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
         const chords = {
             'C':  [3, 0, 0, 0], 'G':  [2, 3, 2, 0], 'F':  [0, 1, 0, 2], 'Am': [0, 0, 0, 2],
@@ -365,18 +356,44 @@
         }
         renderCalendar();
 
-        // --- 5. TAROT DIARIO ---
+        // --- 5. GA-TAROT (CON TUS FOTOS) ---
+        // Aquí están los nombres exactos que me diste
         const deck = [
-            { icon: "☀️", name: "El Sol", meaning: "Hoy es un día brillante. La alegría y el éxito te acompañan. Confía en tu luz." },
-            { icon: "🌙", name: "La Luna", meaning: "Escucha a tu intuición. Los sueños de hoy tienen mensajes importantes para ti." },
-            { icon: "🌟", name: "La Estrella", meaning: "Esperanza y renovación. El universo te guía hacia tus deseos más puros." },
-            { icon: "❤️", name: "Los Enamorados", meaning: "Un día para conectar desde el corazón. El amor y la armonía fluyen." },
-            { icon: "🦁", name: "La Fuerza", meaning: "Tienes el coraje necesario. Enfréntate al día con gentileza y poder." },
-            { icon: "🌍", name: "El Mundo", meaning: "Un ciclo se completa con éxito. Siente la plenitud de haber logrado algo." },
-            { icon: "🪄", name: "El Mago", meaning: "Tienes todas las herramientas. Hoy es el día perfecto para crear algo nuevo." },
-            { icon: "🎡", name: "La Rueda", meaning: "Cambios positivos vienen en camino. Déjate llevar por el destino." },
-            { icon: "⚖️", name: "La Justicia", meaning: "El equilibrio llega a tu vida. La verdad saldrá a la luz hoy." },
-            { icon: "👸", name: "La Emperatriz", meaning: "Creatividad y abundancia. Hoy floreces en todo lo que tocas." }
+            { 
+                image: "Michichay .jpeg", // El Protagonista
+                name: "El Protagonista", 
+                meaning: "Como Michichay, hoy eres el centro de la historia. Todo gira a tu favor. ¡Brilla con tu luz propia!" 
+            },
+            { 
+                image: "Fotooo.jpeg", // ELLA - La Carta Más Poderosa
+                name: "La Musa (Tú)", 
+                meaning: "La carta más bella de la baraja. Hoy irradias arte, inspiración y poder. El universo está enamorado de ti." 
+            },
+            { 
+                image: "Gato Drogo.jpeg", // El Loco / High
+                name: "El Gato Viajero", 
+                meaning: "Estás un poco en las nubes hoy, y está bien. Es un día para soñar despierta, reírte de la nada y dejarte llevar." 
+            },
+            { 
+                image: "Gato Cachondo.jpeg", // La Pasión
+                name: "Pura Pasión", 
+                meaning: "Hay fuego en el aire hoy. Te sientes magnética e irresistible. Cuidado con lo que deseas, que se cumple." 
+            },
+            { 
+                image: "Trio bandido.jpeg", // 3 de Copas / Amistad
+                name: "Los Cómplices", 
+                meaning: "Amistad y travesuras. Un día perfecto para planear algo divertido o simplemente reírte de todo con los tuyos." 
+            },
+            { 
+                image: "Gato pinguiño.jpeg", // Autenticidad
+                name: "El Elegante", 
+                meaning: "Aunque a veces te sientas rara, tienes un estilo único. Acepta tu rareza hoy, es tu superpoder." 
+            },
+            { 
+                image: "Gato berrako.jpeg", // La Fuerza
+                name: "La Jefa", 
+                meaning: "Hoy mandas tú. Nadie te puede decir qué hacer. Tienes la actitud y la fuerza para lograr lo que quieras." 
+            }
         ];
 
         function getDailyCard() {
@@ -391,15 +408,15 @@
             const cardEl = document.getElementById('dailyCard');
             if (cardEl.classList.contains('flipped')) return;
             const cardData = getDailyCard();
-            document.getElementById('tarotIcon').innerText = cardData.icon;
+            document.getElementById('tarotImageSrc').src = cardData.image; 
             document.getElementById('tarotName').innerText = cardData.name;
             document.getElementById('tarotMeaning').innerText = cardData.meaning;
             cardEl.classList.add('flipped');
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('tarot-date').innerText = "Carta para el " + new Date().toLocaleDateString('es-ES', options);
+            document.getElementById('tarot-date').innerText = "Predicción gatuna para el " + new Date().toLocaleDateString('es-ES', options);
         }
 
-        // --- 6. 3D UNIVERSO REALISTA (CON ZOOM) ---
+        // --- 6. 3D UNIVERSO REALISTA ---
         let camera, scene, renderer, controls, wordGroup, starField;
         const container = document.getElementById('scene-container');
         
@@ -422,15 +439,12 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
-            
-            // Controles con Zoom y Rotación
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping=true; controls.enablePan=false; 
             controls.enableZoom=true; controls.minDistance=300; controls.maxDistance=1500;
             controls.autoRotate=true; controls.autoRotateSpeed=0.3;
             controls.addEventListener('start', () => controls.autoRotate = false);
 
-            // Estrellas
             const geo = new THREE.BufferGeometry(); const pos = []; const sizes = [];
             for(let i=0; i<5000; i++) {
                 pos.push((Math.random()-0.5)*3000, (Math.random()-0.5)*3000, (Math.random()-0.5)*3000);
@@ -441,7 +455,6 @@
             const mat = new THREE.PointsMaterial({color:0xffffff, size:4, map:createStarTexture(), transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true});
             starField = new THREE.Points(geo, mat);
             scene.add(starField);
-            
             createSofi(); animate();
         }
 
@@ -449,7 +462,6 @@
             wordGroup = new THREE.Group();
             const matL = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
             const matP = new THREE.PointsMaterial({color:0xffffff, size:5, map:createStarTexture(), transparent:true, blending:THREE.AdditiveBlending});
-            
             function addLetter(pts, x) {
                 const g = new THREE.BufferGeometry().setFromPoints(pts);
                 const l = new THREE.Line(g, matL); l.position.x=x;
@@ -466,12 +478,18 @@
             wordGroup.position.set((Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
             scene.add(wordGroup);
         }
-
         function animate() { requestAnimationFrame(animate); controls.update(); if(starField) starField.rotation.y += 0.0002; renderer.render(scene, camera); }
         window.addEventListener('resize', () => { if(camera){ camera.aspect = container.clientWidth/container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); }});
 
-        // 7. PLAYER MÚSICA
-        const playlist = [ {title:"Canción 1", file:"cancion1.mp3"}, {title:"Canción 2", file:"cancion2.mp3"} ];
+        // 7. PLAYER MÚSICA ACTUALIZADO
+        const playlist = [ 
+            {title:"Taxi", file:"Taxi.mp3"}, 
+            {title:"Enamorado", file:"Enamorado.mp3"},
+            {title:"Flores", file:"Flores.mp3"},
+            {title:"Hecho para ti", file:"Hechoparati.mp3"},
+            {title:"No digas nada", file:"Nodigasnada.mp3"},
+            {title:"NeoRoneo", file:"NeoRoneo.mp3"}
+        ];
         let currSong = 0; const player = document.getElementById('audioPlayer'); let isPlaying = false;
         function togglePlay() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
