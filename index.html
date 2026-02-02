@@ -14,7 +14,7 @@
         /* --- ESTILOS GENERALES --- */
         body { margin: 0; background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         
-        /* PANTALLA DE INICIO (Para activar audio) */
+        /* PANTALLA DE INICIO */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 5000; display: flex; flex-direction: column;
@@ -36,40 +36,12 @@
         #scene-container:active { cursor: grabbing; }
         .instruction { text-align: center; color: #888; font-size: 0.9rem; margin-top: -30px; margin-bottom: 40px; }
 
-        /* SECCIONES */
+        /* SECCIONES TEXTO */
         .bottom-section { display: flex; justify-content: space-between; width: 85%; margin: 0 auto 50px auto; gap: 20px; flex-wrap: wrap;}
         .card { background: #0f0f0f; border: 1px solid #222; padding: 25px; width: 45%; border-radius: 15px; min-width: 300px; flex-grow: 1; }
         h2 { color: #d400ff; margin-top: 0; font-size: 1.4rem; }
         p { line-height: 1.6; color: #ccc; font-size: 0.95rem; }
 
-        /* UKELELE AMPLIADO */
-        .uke-section {
-            width: 90%; max-width: 550px; margin: 0 auto 100px auto;
-            text-align: center; background: #2a1b0e; padding: 20px;
-            border-radius: 20px; border: 4px solid #4a3018;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            /* ESTO EVITA QUE SE MUEVA LA PANTALLA AL TOCAR */
-            touch-action: none; 
-        }
-        .chord-selectors { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .chord-btn {
-            background: #4a3018; color: #dcb; border: 1px solid #6b4c2e;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; min-width: 40px;
-        }
-        .chord-btn.active { background: #d400ff; color: white; border-color: #fff; transform: scale(1.1); }
-        
-        .fretboard {
-            position: relative; height: 180px; background: #1a1008;
-            border: 2px solid #4a3018; border-radius: 8px;
-            display: flex; flex-direction: column; justify-content: space-evenly;
-            overflow: hidden; cursor: pointer;
-        }
-        .fret-line { position: absolute; top:0; height:100%; width:2px; background:#553a22; }
-        .string { position: relative; width: 100%; height: 45px; display: flex; align-items: center; z-index: 10; }
-        .string::before { content:''; position: absolute; left:0; right:0; height:2px; background: rgba(255,255,255,0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        .string.vibrating::before { background: #d400ff; height: 3px; box-shadow: 0 0 10px #d400ff; }
-        .finger-dot { position: absolute; width: 16px; height: 16px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; z-index: 20; }
-        
         /* CALENDARIO */
         .calendar-section { width: 85%; margin: 0 auto 100px auto; background: #0f0f0f; border: 1px solid #222; border-radius: 15px; padding: 20px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -79,7 +51,76 @@
         .day-cell:hover { background: #2a2a2a; border-color:#555; }
         .day-cell.today { border: 1px solid #d400ff; color: #d400ff; font-weight: bold;}
         .has-note::after { content: '★'; display: block; color: #ffd700; font-size: 0.8rem; position: absolute; top: 2px; right: 2px;}
-        .day-cell { position: relative; }
+
+        /* UKELELE */
+        .uke-section {
+            width: 90%; max-width: 550px; margin: 0 auto 100px auto;
+            text-align: center; background: #2a1b0e; padding: 20px;
+            border-radius: 20px; border: 4px solid #4a3018;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+            touch-action: none; /* Fix para scroll en móvil */
+        }
+        .chord-selectors { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .chord-btn {
+            background: #4a3018; color: #dcb; border: 1px solid #6b4c2e;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; min-width: 40px;
+        }
+        .chord-btn.active { background: #d400ff; color: white; border-color: #fff; transform: scale(1.1); }
+        
+        .fretboard {
+            position: relative; height: 180px; 
+            background: linear-gradient(to bottom, #2c1e12, #1a0b05);
+            border: 4px solid #4a3018; border-radius: 8px;
+            display: flex; flex-direction: column; justify-content: space-evenly;
+            overflow: hidden; cursor: pointer;
+        }
+        .fret-line { position: absolute; top:0; height:100%; width:2px; background:#553a22; }
+        .string { position: relative; width: 100%; height: 45px; display: flex; align-items: center; z-index: 10; }
+        .string::before { content:''; position: absolute; left:0; right:0; height:2px; background: rgba(255,255,255,0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .string.vibrating::before { background: #d400ff; height: 3px; box-shadow: 0 0 10px #d400ff; }
+        .finger-dot { position: absolute; width: 16px; height: 16px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; z-index: 20; }
+
+        /* --- TAROT CÓSMICO --- */
+        .tarot-section {
+            width: 85%; margin: 0 auto 150px auto;
+            text-align: center; background: linear-gradient(135deg, #1a0b2e 0%, #000 100%);
+            padding: 40px 20px; border-radius: 20px; border: 1px solid #4a3068;
+            box-shadow: 0 0 40px rgba(74, 48, 104, 0.4);
+        }
+        .tarot-container {
+            perspective: 1000px;
+            width: 220px; height: 340px; margin: 30px auto; cursor: pointer;
+        }
+        .tarot-card {
+            width: 100%; height: 100%; position: relative;
+            transform-style: preserve-3d; transition: transform 0.8s;
+            border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        .tarot-card.flipped { transform: rotateY(180deg); }
+        
+        .card-face {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 15px;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        .card-back {
+            background: linear-gradient(45deg, #111, #222);
+            border: 2px solid #d400ff;
+            background-image: repeating-linear-gradient(45deg, #1a1a1a 25%, transparent 25%, transparent 75%, #1a1a1a 75%, #1a1a1a), repeating-linear-gradient(45deg, #1a1a1a 25%, #0f0f0f 25%, #0f0f0f 75%, #1a1a1a 75%, #1a1a1a);
+            background-position: 0 0, 10px 10px; background-size: 20px 20px;
+        }
+        .card-back::after { content: '★'; font-size: 4rem; color: #d400ff; text-shadow: 0 0 20px #d400ff; animation: pulse 2s infinite; }
+        
+        .card-front {
+            background: #0f0f0f; border: 2px solid #d400ff;
+            transform: rotateY(180deg); padding: 10px; box-sizing: border-box;
+        }
+        .tarot-icon { font-size: 5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+        .tarot-name { font-size: 1.5rem; color: #d400ff; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .tarot-meaning { font-size: 0.9rem; color: #ccc; line-height: 1.4; padding: 0 10px; }
+        
+        @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.5; transform: scale(1); } }
 
         /* MODAL Y PLAYER */
         #noteModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center; }
@@ -91,7 +132,7 @@
 
         @media (max-width: 768px) {
             .bottom-section { flex-direction: column; }
-            .card, .calendar-section, .uke-section { width: 95%; }
+            .card, .calendar-section, .uke-section, .tarot-section { width: 95%; }
             #music-player { left: 2.5%; width: 95%; justify-content: space-between; }
         }
     </style>
@@ -104,16 +145,17 @@
     </div>
 
     <div id="scene-container"></div>
-    <p class="instruction">✨ Gira y busca tu nombre escondido en una posición aleatoria ✨</p>
+    <p class="instruction">✨ Gira y busca tu nombre escondido (¡Puedes hacer Zoom!) ✨</p>
 
     <div class="bottom-section">
         <div class="card">
-            <h2>Ukelele Mágico</h2>
-            <p>Toca los acordes de tus canciones favoritas. Pasa el dedo o el mouse sobre las cuerdas para rasguear.</p>
+            <h2>Bienvenida</h2>
+            <p>Este es tu rincón especial. Arriba tienes un universo realista para explorar.</p>
+            <p>Abajo, música, un ukelele para practicar y un Tarot mágico.</p>
         </div>
         <div class="card">
             <h2>Calendario en la Nube</h2>
-            <p>Déjame un mensaje en cualquier día. Se guarda automáticamente para los dos.</p>
+            <p>Haz clic en cualquier día. Lo que escribas se guarda para los dos.</p>
         </div>
     </div>
 
@@ -128,17 +170,22 @@
 
     <div class="uke-section">
         <h2 style="color:#e0c0a0; margin-bottom:15px; font-family: 'Georgia', serif;">Ukelele Pro 🎸</h2>
-<div class="chord-selectors">
-    <button class="chord-btn active" onclick="setChord('C')">C</button>
-    <button class="chord-btn" onclick="setChord('G')">G</button>
-    <button class="chord-btn" onclick="setChord('F')">F</button>
-    <button class="chord-btn" onclick="setChord('Am')">Am</button>
-    
-    <button class="chord-btn" onclick="setChord('Dm')">Dm</button>
-    <button class="chord-btn" onclick="setChord('Em')">Em</button>
-    <button class="chord-btn" onclick="setChord('A')">A</button>
-    <button class="chord-btn" onclick="setChord('D')">D</button> <button class="chord-btn" onclick="setChord('E7')">E7</button>
-    <button class="chord-btn" onclick="setChord('G7')">G7</button> <button class="chord-btn" onclick="setChord('C7')">C7</button> <button class="chord-btn" onclick="setChord('Bb')">Bb</button> </div>
+        <div class="chord-selectors">
+            <button class="chord-btn active" onclick="setChord('C')">C</button>
+            <button class="chord-btn" onclick="setChord('G')">G</button>
+            <button class="chord-btn" onclick="setChord('F')">F</button>
+            <button class="chord-btn" onclick="setChord('Am')">Am</button>
+            
+            <button class="chord-btn" onclick="setChord('Dm')">Dm</button>
+            <button class="chord-btn" onclick="setChord('Em')">Em</button>
+            <button class="chord-btn" onclick="setChord('A')">A</button>
+            <button class="chord-btn" onclick="setChord('D')">D</button>
+            
+            <button class="chord-btn" onclick="setChord('E7')">E7</button>
+            <button class="chord-btn" onclick="setChord('G7')">G7</button>
+            <button class="chord-btn" onclick="setChord('C7')">C7</button>
+            <button class="chord-btn" onclick="setChord('Bb')">Bb</button>
+        </div>
         
         <div class="fretboard" id="fretboard">
             <div class="fret-line" style="left: 25%"></div>
@@ -165,6 +212,23 @@
                 <div class="finger-dot" style="left:87.5%" data-show="4"></div>
             </div>
         </div>
+    </div>
+
+    <div class="tarot-section">
+        <h2>🔮 Oráculo de las Estrellas</h2>
+        <p style="font-size: 0.9rem; color:#aaa;">Toca la carta para revelar tu energía del día</p>
+        
+        <div class="tarot-container" onclick="flipCard()">
+            <div class="tarot-card" id="dailyCard">
+                <div class="card-face card-back"></div>
+                <div class="card-face card-front">
+                    <div class="tarot-icon" id="tarotIcon"></div>
+                    <div class="tarot-name" id="tarotName"></div>
+                    <div class="tarot-meaning" id="tarotMeaning"></div>
+                </div>
+            </div>
+        </div>
+        <p id="tarot-date" style="margin-top:20px; font-size: 0.8rem; color:#666;"></p>
     </div>
 
     <div id="noteModal">
@@ -199,12 +263,8 @@
             messagingSenderId: "896831826087",
             appId: "1:896831826087:web:d9a067f38828a5c1eb1382"
         };
-        
-        try {
-            firebase.initializeApp(firebaseConfig);
-            var database = firebase.database();
-            console.log("Firebase conectado");
-        } catch (e) { console.error("Error Firebase:", e); }
+        try { firebase.initializeApp(firebaseConfig); var database = firebase.database(); } 
+        catch (e) { console.error("Error Firebase", e); }
 
         // --- 2. AUDIO INIT ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -212,46 +272,25 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('start-screen').style.opacity = '0';
             setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; }, 1000);
-            // Iniciar 3D después del click para asegurar carga
-            init3D();
+            init3D(); // Iniciar el universo realista
         }
 
-        // --- 3. UKELELE LÓGICA ---
-        // Frecuencias base [A4, E4, C4, G4]
+        // --- 3. UKELELE LÓGICA (12 ACORDES) ---
         const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
-        // Mapa de acordes [Traste A, Traste E, Traste C, Traste G]
-        // REEMPLAZA LA VARIABLE const chords EN EL SCRIPT POR ESTA:
-const chords = {
-    // Básicos
-    'C':  [3, 0, 0, 0], // Do Mayor
-    'G':  [2, 3, 2, 0], // Sol Mayor
-    'F':  [0, 1, 0, 2], // Fa Mayor
-    'Am': [0, 0, 0, 2], // La Menor
-    
-    // Nivel 2
-    'Dm': [0, 1, 2, 2], // Re Menor
-    'Em': [2, 3, 4, 0], // Mi Menor
-    'A':  [0, 0, 1, 2], // La Mayor
-    'D':  [0, 2, 2, 2], // Re Mayor (NUEVO)
-    
-    // Especiales
-    'E7': [2, 0, 2, 1], // Mi 7
-    'G7': [2, 1, 2, 0], // Sol 7 (NUEVO - Muy usado en blues/pop)
-    'C7': [1, 0, 0, 0], // Do 7 (NUEVO - Suena muy 'hawaiano')
-    'Bb': [1, 1, 2, 3]  // Si Bemol (NUEVO - Un poco más difícil, cejilla)
-};
+        const chords = {
+            'C':  [3, 0, 0, 0], 'G':  [2, 3, 2, 0], 'F':  [0, 1, 0, 2], 'Am': [0, 0, 0, 2],
+            'Dm': [0, 1, 2, 2], 'Em': [2, 3, 4, 0], 'A':  [0, 0, 1, 2], 'D':  [0, 2, 2, 2],
+            'E7': [2, 0, 2, 1], 'G7': [2, 1, 2, 0], 'C7': [1, 0, 0, 0], 'Bb': [1, 1, 2, 3]
+        };
         let currentShape = chords['C'];
 
         function setChord(name) {
             currentShape = chords[name];
             document.querySelectorAll('.chord-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
-            
             const strings = document.querySelectorAll('.string');
             strings.forEach((str, i) => {
-                // Mapeo visual (i=0 es Top/G) a lógico (index 3 es G)
-                const logicIdx = 3 - i; 
-                const fret = currentShape[logicIdx];
+                const logicIdx = 3 - i; const fret = currentShape[logicIdx];
                 str.querySelectorAll('.finger-dot').forEach(d => d.style.display = 'none');
                 str.setAttribute('data-f', fret);
                 if(fret > 0) {
@@ -260,47 +299,26 @@ const chords = {
                 }
             });
         }
-        setTimeout(() => setChord('C'), 500); // Iniciar visualmente
+        setTimeout(() => setChord('C'), 500);
 
         function playString(idx) {
-            const fret = currentShape[idx];
-            const freq = openFreqs[idx] * Math.pow(2, fret/12);
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
+            const fret = currentShape[idx]; const freq = openFreqs[idx] * Math.pow(2, fret/12);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             osc.type = 'triangle'; osc.frequency.value = freq;
-            
             osc.connect(gain); gain.connect(audioCtx.destination);
-            
             const now = audioCtx.currentTime;
             gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.4, now + 0.02); // Ataque más suave
+            gain.gain.linearRampToValueAtTime(0.4, now + 0.02);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
-            
             osc.start(now); osc.stop(now + 1.5);
-
-            // Animación
             const visualIdx = 3 - idx; 
             const strEl = document.querySelectorAll('.string')[visualIdx];
-            if(strEl) {
-                strEl.classList.add('vibrating');
-                setTimeout(() => strEl.classList.remove('vibrating'), 200);
-            }
+            if(strEl) { strEl.classList.add('vibrating'); setTimeout(() => strEl.classList.remove('vibrating'), 200); }
         }
 
-        // Eventos de rasgueo (CORREGIDO PARA MÓVIL)
         const fretboard = document.getElementById('fretboard');
-        
-        // Ratón (PC)
-        fretboard.addEventListener('mousemove', (e) => { 
-            if(e.buttons === 1) checkStrum(e); 
-        });
-
-        // Táctil (Celular) - Bloqueamos el scroll
-        fretboard.addEventListener('touchmove', (e) => { 
-            e.preventDefault(); // ¡ESTO ES LA CLAVE! Bloquea el scroll de pantalla
-            checkStrum(e.touches[0]); 
-        }, { passive: false }); // 'false' permite usar preventDefault
+        fretboard.addEventListener('mousemove', (e) => { if(e.buttons === 1) checkStrum(e); });
+        fretboard.addEventListener('touchmove', (e) => { e.preventDefault(); checkStrum(e.touches[0]); }, {passive:false});
 
         function checkStrum(pointer) {
             const el = document.elementFromPoint(pointer.clientX, pointer.clientY);
@@ -312,211 +330,158 @@ const chords = {
             s.addEventListener('mousedown', () => playString(parseInt(s.getAttribute('data-s'))));
         });
 
-
         // --- 4. CALENDARIO ---
         let currentDate = new Date();
         const monthYearEl = document.getElementById('monthYear');
         const calendarGrid = document.getElementById('calendarGrid');
         const modal = document.getElementById('noteModal');
         const noteText = document.getElementById('noteText');
-        let selectedDateKey = null;
-        let allNotes = {};
-
-        if(database) {
-            database.ref('calendario_notas').on('value', (snapshot) => {
-                allNotes = snapshot.val() || {};
-                renderCalendar();
-            });
-        }
+        let selectedDateKey = null; let allNotes = {};
+        if(database) { database.ref('calendario_notas').on('value', (s) => { allNotes = s.val() || {}; renderCalendar(); }); }
 
         function renderCalendar() {
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
+            const year = currentDate.getFullYear(); const month = currentDate.getMonth();
             monthYearEl.innerText = new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
             calendarGrid.innerHTML = '';
-            
-            ['D','L','M','X','J','V','S'].forEach(d => {
-                const el = document.createElement('div'); el.innerText = d; el.style.color='#777'; calendarGrid.appendChild(el);
-            });
+            ['D','L','M','X','J','V','S'].forEach(d => { const el = document.createElement('div'); el.innerText = d; el.style.color='#777'; calendarGrid.appendChild(el); });
             const firstDay = new Date(year, month, 1).getDay();
             for(let i=0; i<firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const today = new Date();
-
+            const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date();
             for(let i=1; i<=daysInMonth; i++) {
                 const cell = document.createElement('div'); cell.className = 'day-cell'; cell.innerText = i;
                 const key = `${i}-${month}-${year}`;
-                if(i===today.getDate() && month===today.getMonth() && year===today.getFullYear()) cell.classList.add('today');
+                if(i===today.getDate() && month===today.getMonth()) cell.classList.add('today');
                 if(allNotes[key]) cell.classList.add('has-note');
-                cell.onclick = () => {
-                    selectedDateKey = key;
-                    document.getElementById('modalDateTitle').innerText = key.replace(/-/g, '/');
-                    noteText.value = allNotes[key] || '';
-                    modal.style.display = 'flex';
-                };
+                cell.onclick = () => { selectedDateKey = key; document.getElementById('modalDateTitle').innerText = key.replace(/-/g, '/'); noteText.value = allNotes[key] || ''; modal.style.display = 'flex'; };
                 calendarGrid.appendChild(cell);
             }
         }
         function changeMonth(d) { currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
         function closeModal() { modal.style.display = 'none'; }
         function saveNote() {
-            if(!database) return alert("Error de conexión");
             const val = noteText.value.trim();
-            if(val) database.ref('calendario_notas/'+selectedDateKey).set(val);
-            else database.ref('calendario_notas/'+selectedDateKey).remove();
+            if(val) database.ref('calendario_notas/'+selectedDateKey).set(val); else database.ref('calendario_notas/'+selectedDateKey).remove();
             closeModal();
         }
         renderCalendar();
 
+        // --- 5. TAROT DIARIO ---
+        const deck = [
+            { icon: "☀️", name: "El Sol", meaning: "Hoy es un día brillante. La alegría y el éxito te acompañan. Confía en tu luz." },
+            { icon: "🌙", name: "La Luna", meaning: "Escucha a tu intuición. Los sueños de hoy tienen mensajes importantes para ti." },
+            { icon: "🌟", name: "La Estrella", meaning: "Esperanza y renovación. El universo te guía hacia tus deseos más puros." },
+            { icon: "❤️", name: "Los Enamorados", meaning: "Un día para conectar desde el corazón. El amor y la armonía fluyen." },
+            { icon: "🦁", name: "La Fuerza", meaning: "Tienes el coraje necesario. Enfréntate al día con gentileza y poder." },
+            { icon: "🌍", name: "El Mundo", meaning: "Un ciclo se completa con éxito. Siente la plenitud de haber logrado algo." },
+            { icon: "🪄", name: "El Mago", meaning: "Tienes todas las herramientas. Hoy es el día perfecto para crear algo nuevo." },
+            { icon: "🎡", name: "La Rueda", meaning: "Cambios positivos vienen en camino. Déjate llevar por el destino." },
+            { icon: "⚖️", name: "La Justicia", meaning: "El equilibrio llega a tu vida. La verdad saldrá a la luz hoy." },
+            { icon: "👸", name: "La Emperatriz", meaning: "Creatividad y abundancia. Hoy floreces en todo lo que tocas." }
+        ];
 
-        // --- 5. 3D SOFI MEJORADO (REALISMO + ZOOM) ---
+        function getDailyCard() {
+            const dateStr = new Date().toDateString();
+            let hash = 0;
+            for (let i = 0; i < dateStr.length; i++) hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
+            const index = Math.abs(hash) % deck.length;
+            return deck[index];
+        }
+
+        function flipCard() {
+            const cardEl = document.getElementById('dailyCard');
+            if (cardEl.classList.contains('flipped')) return;
+            const cardData = getDailyCard();
+            document.getElementById('tarotIcon').innerText = cardData.icon;
+            document.getElementById('tarotName').innerText = cardData.name;
+            document.getElementById('tarotMeaning').innerText = cardData.meaning;
+            cardEl.classList.add('flipped');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('tarot-date').innerText = "Carta para el " + new Date().toLocaleDateString('es-ES', options);
+        }
+
+        // --- 6. 3D UNIVERSO REALISTA (CON ZOOM) ---
         let camera, scene, renderer, controls, wordGroup, starField;
         const container = document.getElementById('scene-container');
         
-        // FUNCIÓN AUXILIAR: Crea una textura de estrella brillante sin imágenes externas
         function createStarTexture() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 64; canvas.height = 64;
-            const ctx = canvas.getContext('2d');
-            
-            // Dibujamos un degradado radial para que parezca luz
-            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');   // Centro blanco brillante
-            gradient.addColorStop(0.3, 'rgba(220, 220, 255, 0.6)'); // Halo azulado
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');         // Borde transparente
-            
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, 64, 64);
-            
-            const texture = new THREE.CanvasTexture(canvas);
-            return texture;
+            const c = document.createElement('canvas'); c.width=64; c.height=64;
+            const ctx = c.getContext('2d');
+            const g = ctx.createRadialGradient(32,32,0,32,32,32);
+            g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.3,'rgba(220,220,255,0.6)'); g.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle=g; ctx.fillRect(0,0,64,64);
+            return new THREE.CanvasTexture(c);
         }
 
         function init3D() {
             if(renderer) return; 
             scene = new THREE.Scene();
-            // Niebla negra más densa para ocultar el final del universo y dar profundidad
             scene.fog = new THREE.FogExp2(0x000000, 0.0015);
-            
             camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 3000);
-            camera.position.z = 800; // Empezamos un poco más lejos
-            
+            camera.position.z = 800;
             renderer = new THREE.WebGLRenderer({alpha:true, antialias:true});
             renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio); // Se ve mejor en celulares buenos
+            renderer.setPixelRatio(window.devicePixelRatio);
             container.appendChild(renderer.domElement);
             
-            // --- CONTROLES MEJORADOS ---
+            // Controles con Zoom y Rotación
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; 
-            controls.dampingFactor = 0.05; // Movimiento más suave
-            controls.enablePan = false;
-            
-            // 1. ACTIVAR ZOOM SIMPLE
-            controls.enableZoom = true; 
-            controls.minDistance = 300;  // No puede acercarse más de esto
-            controls.maxDistance = 1500; // No puede alejarse más de esto
+            controls.enableDamping=true; controls.enablePan=false; 
+            controls.enableZoom=true; controls.minDistance=300; controls.maxDistance=1500;
+            controls.autoRotate=true; controls.autoRotateSpeed=0.3;
+            controls.addEventListener('start', () => controls.autoRotate = false);
 
-            // 2. MOVIMIENTO AUTOMÁTICO LENTO (Añade realismo)
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 0.3; // Muy despacito
-            
-            // --- FONDO DE ESTRELLAS REALISTA ---
-            const starGeo = new THREE.BufferGeometry();
-            const starPos = [];
-            const starSizes = []; // Array para guardar tamaños variados
-
-            for(let i=0; i<5000; i++) { // ¡Más estrellas!
-                // Posiciones más dispersas
-                starPos.push((Math.random()-0.5)*3000, (Math.random()-0.5)*3000, (Math.random()-0.5)*3000);
-                // Tamaños aleatorios para profundidad
-                starSizes.push(Math.random() * 3 + 0.5); 
+            // Estrellas
+            const geo = new THREE.BufferGeometry(); const pos = []; const sizes = [];
+            for(let i=0; i<5000; i++) {
+                pos.push((Math.random()-0.5)*3000, (Math.random()-0.5)*3000, (Math.random()-0.5)*3000);
+                sizes.push(Math.random()*3+0.5);
             }
-            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-            starGeo.setAttribute('size', new THREE.Float32BufferAttribute(starSizes, 1));
-
-            // Material con textura
-            const starMat = new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 4, // Tamaño base, se multiplica por el atributo 'size'
-                map: createStarTexture(), // Usamos la textura brillante
-                transparent: true,
-                blending: THREE.AdditiveBlending, // Hace que brillen más al superponerse
-                depthWrite: false, // Evita problemas visuales con la transparencia
-                sizeAttenuation: true // Se ven más pequeñas si están lejos
-            });
-            
-            starField = new THREE.Points(starGeo, starMat);
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            geo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+            const mat = new THREE.PointsMaterial({color:0xffffff, size:4, map:createStarTexture(), transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true});
+            starField = new THREE.Points(geo, mat);
             scene.add(starField);
             
-            createSofi();
-            animate();
-
-            // Detectar interacción para parar la rotación automática si ella quiere buscar
-            controls.addEventListener('start', () => controls.autoRotate = false);
+            createSofi(); animate();
         }
 
         function createSofi() {
             wordGroup = new THREE.Group();
-            // Hacemos las líneas y puntos de SOFI un poco más brillantes para que destaquen
             const matL = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
-            const matP = new THREE.PointsMaterial({color:0xffffff, size:5, map: createStarTexture(), transparent:true, blending: THREE.AdditiveBlending});
+            const matP = new THREE.PointsMaterial({color:0xffffff, size:5, map:createStarTexture(), transparent:true, blending:THREE.AdditiveBlending});
             
             function addLetter(pts, x) {
                 const g = new THREE.BufferGeometry().setFromPoints(pts);
-                const l = new THREE.Line(g, matL); l.position.x = x;
-                const p = new THREE.Points(g, matP); p.position.x = x;
+                const l = new THREE.Line(g, matL); l.position.x=x;
+                const p = new THREE.Points(g, matP); p.position.x=x;
                 wordGroup.add(l, p);
             }
             const h=30, w=20;
-            // S O F I
             addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,0,0), new THREE.Vector3(w,0,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0)], -60);
             addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(w,h,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0), new THREE.Vector3(0,h,0)], -30);
             addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 10); addLetter([new THREE.Vector3(0,0,0), new THREE.Vector3(w*0.7,0,0)], 10);
             addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 40);
 
-            // ALEATORIEDAD MANTENIDA
             wordGroup.rotation.set(Math.random()*Math.PI*2, Math.random()*Math.PI*2, Math.random()*Math.PI*2);
-            const spread = 1000; // Un poco más de espacio para esconderse
-            wordGroup.position.set((Math.random()-0.5)*spread, (Math.random()-0.5)*spread, (Math.random()-0.5)*spread);
+            wordGroup.position.set((Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
             scene.add(wordGroup);
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            // Opcional: Pequeño titileo de estrellas
-            if(starField) starField.rotation.y += 0.0002; 
-            renderer.render(scene, camera);
-        }
-        
-        window.addEventListener('resize', () => {
-            if(!camera) return;
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        });
+        function animate() { requestAnimationFrame(animate); controls.update(); if(starField) starField.rotation.y += 0.0002; renderer.render(scene, camera); }
+        window.addEventListener('resize', () => { if(camera){ camera.aspect = container.clientWidth/container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); }});
 
-        // 6. PLAYER MÚSICA
+        // 7. PLAYER MÚSICA
         const playlist = [ {title:"Canción 1", file:"cancion1.mp3"}, {title:"Canción 2", file:"cancion2.mp3"} ];
-        let currSong = 0;
-        const player = document.getElementById('audioPlayer');
-        let isPlaying = false;
+        let currSong = 0; const player = document.getElementById('audioPlayer'); let isPlaying = false;
         function togglePlay() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            if(!playlist.length || !player) return;
-            if(!player.src) player.src = playlist[0].file;
+            if(!playlist.length) return; if(!player.src) player.src = playlist[0].file;
             if(isPlaying) { player.pause(); document.getElementById('playBtn').innerText="▶"; }
             else { player.play(); document.getElementById('playBtn').innerText="⏸"; }
             isPlaying = !isPlaying;
         }
-        function nextSong() { currSong = (currSong+1)%playlist.length; updatePlayer(); }
-        function prevSong() { currSong = (currSong-1+playlist.length)%playlist.length; updatePlayer(); }
-        function updatePlayer() {
-            player.src = playlist[currSong].file;
-            document.getElementById('songTitle').innerText = playlist[currSong].title;
-            if(isPlaying) player.play();
-        }
+        function nextSong() { currSong = (currSong+1)%playlist.length; player.src = playlist[currSong].file; document.getElementById('songTitle').innerText = playlist[currSong].title; if(isPlaying) player.play(); }
+        function prevSong() { currSong = (currSong-1+playlist.length)%playlist.length; player.src = playlist[currSong].file; document.getElementById('songTitle').innerText = playlist[currSong].title; if(isPlaying) player.play(); }
     </script>
 </body>
 </html>
