@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        /* --- ESTILOS --- */
+        /* --- ESTILOS GENERALES --- */
         body { margin: 0; background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         /* PANTALLA DE INICIO (Para activar audio) */
@@ -29,7 +29,7 @@
 
         /* CONTENEDOR 3D */
         #scene-container {
-            width: 85%; height: 400px; margin: 40px auto; position: relative;
+            width: 85%; height: 450px; margin: 40px auto; position: relative;
             border: 1px solid #333; border-radius: 15px; overflow: hidden;
             box-shadow: 0 0 30px rgba(212, 0, 255, 0.15); cursor: grab;
         }
@@ -42,9 +42,9 @@
         h2 { color: #d400ff; margin-top: 0; font-size: 1.4rem; }
         p { line-height: 1.6; color: #ccc; font-size: 0.95rem; }
 
-        /* UKELELE */
+        /* UKELELE AMPLIADO */
         .uke-section {
-            width: 90%; max-width: 500px; margin: 0 auto 100px auto;
+            width: 90%; max-width: 550px; margin: 0 auto 100px auto;
             text-align: center; background: #2a1b0e; padding: 20px;
             border-radius: 20px; border: 4px solid #4a3018;
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
@@ -52,30 +52,32 @@
         .chord-selectors { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
         .chord-btn {
             background: #4a3018; color: #dcb; border: 1px solid #6b4c2e;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s;
+            padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; min-width: 40px;
         }
         .chord-btn.active { background: #d400ff; color: white; border-color: #fff; transform: scale(1.1); }
         
         .fretboard {
-            position: relative; height: 160px; background: #1a1008;
+            position: relative; height: 180px; background: #1a1008;
             border: 2px solid #4a3018; border-radius: 8px;
             display: flex; flex-direction: column; justify-content: space-evenly;
             overflow: hidden; cursor: pointer;
         }
         .fret-line { position: absolute; top:0; height:100%; width:2px; background:#553a22; }
-        .string { position: relative; width: 100%; height: 40px; display: flex; align-items: center; z-index: 10; }
-        .string::before { content:''; position: absolute; left:0; right:0; height:2px; background: rgba(255,255,255,0.5); }
+        .string { position: relative; width: 100%; height: 45px; display: flex; align-items: center; z-index: 10; }
+        .string::before { content:''; position: absolute; left:0; right:0; height:2px; background: rgba(255,255,255,0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         .string.vibrating::before { background: #d400ff; height: 3px; box-shadow: 0 0 10px #d400ff; }
-        .finger-dot { position: absolute; width: 14px; height: 14px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; }
+        .finger-dot { position: absolute; width: 16px; height: 16px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; z-index: 20; }
         
         /* CALENDARIO */
         .calendar-section { width: 85%; margin: 0 auto 100px auto; background: #0f0f0f; border: 1px solid #222; border-radius: 15px; padding: 20px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-nav { background: #222; color: #d400ff; border: 1px solid #d400ff; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-cell { background: #1a1a1a; padding: 10px; border-radius: 5px; cursor: pointer; min-height: 40px; }
-        .day-cell.today { border: 1px solid #d400ff; color: #d400ff; }
-        .has-note::after { content: '★'; display: block; color: #ffd700; font-size: 0.8rem; }
+        .day-cell { background: #1a1a1a; padding: 10px; border-radius: 5px; cursor: pointer; min-height: 40px; transition: 0.2s;}
+        .day-cell:hover { background: #2a2a2a; border-color:#555; }
+        .day-cell.today { border: 1px solid #d400ff; color: #d400ff; font-weight: bold;}
+        .has-note::after { content: '★'; display: block; color: #ffd700; font-size: 0.8rem; position: absolute; top: 2px; right: 2px;}
+        .day-cell { position: relative; }
 
         /* MODAL Y PLAYER */
         #noteModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center; }
@@ -87,8 +89,8 @@
 
         @media (max-width: 768px) {
             .bottom-section { flex-direction: column; }
-            .card, .calendar-section, .uke-section { width: 90%; }
-            #music-player { left: 5%; width: 90%; justify-content: space-between; }
+            .card, .calendar-section, .uke-section { width: 95%; }
+            #music-player { left: 2.5%; width: 95%; justify-content: space-between; }
         }
     </style>
 </head>
@@ -100,17 +102,16 @@
     </div>
 
     <div id="scene-container"></div>
-    <p class="instruction">✨ Gira y busca tu nombre escondido ✨</p>
+    <p class="instruction">✨ Gira y busca tu nombre escondido en una posición aleatoria ✨</p>
 
     <div class="bottom-section">
         <div class="card">
-            <h2>Ukelele Interactivo</h2>
-            <p>1. Selecciona un acorde (C, G, Am...).</p>
-            <p>2. Pasa el mouse o el dedo sobre las cuerdas para rasguear.</p>
+            <h2>Ukelele Mágico</h2>
+            <p>Toca los acordes de tus canciones favoritas. Pasa el dedo o el mouse sobre las cuerdas para rasguear.</p>
         </div>
         <div class="card">
-            <h2>Calendario Compartido</h2>
-            <p>Haz clic en un día para dejar una nota. Se guarda en nuestra nube personal.</p>
+            <h2>Calendario en la Nube</h2>
+            <p>Déjame un mensaje en cualquier día. Se guarda automáticamente para los dos.</p>
         </div>
     </div>
 
@@ -126,11 +127,16 @@
     <div class="uke-section">
         <h2 style="color:#e0c0a0; margin-bottom:15px;">Ukelele</h2>
         <div class="chord-selectors">
-            <button class="chord-btn active" onclick="setChord('C')">C (Do)</button>
-            <button class="chord-btn" onclick="setChord('G')">G (Sol)</button>
-            <button class="chord-btn" onclick="setChord('F')">F (Fa)</button>
-            <button class="chord-btn" onclick="setChord('Am')">Am (La-)</button>
+            <button class="chord-btn active" onclick="setChord('C')">C</button>
+            <button class="chord-btn" onclick="setChord('G')">G</button>
+            <button class="chord-btn" onclick="setChord('F')">F</button>
+            <button class="chord-btn" onclick="setChord('Am')">Am</button>
+            <button class="chord-btn" onclick="setChord('Dm')">Dm</button>
+            <button class="chord-btn" onclick="setChord('Em')">Em</button>
+            <button class="chord-btn" onclick="setChord('A')">A</button>
+            <button class="chord-btn" onclick="setChord('E7')">E7</button>
         </div>
+        
         <div class="fretboard" id="fretboard">
             <div class="fret-line" style="left: 25%"></div>
             <div class="fret-line" style="left: 50%"></div>
@@ -138,18 +144,22 @@
             <div class="string" data-s="3" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
                 <div class="finger-dot" style="left:37.5%" data-show="2"></div>
                 <div class="finger-dot" style="left:62.5%" data-show="3"></div>
+                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
             </div>
             <div class="string" data-s="2" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
                 <div class="finger-dot" style="left:37.5%" data-show="2"></div>
                 <div class="finger-dot" style="left:62.5%" data-show="3"></div>
+                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
             </div>
             <div class="string" data-s="1" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
                 <div class="finger-dot" style="left:37.5%" data-show="2"></div>
                 <div class="finger-dot" style="left:62.5%" data-show="3"></div>
+                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
             </div>
             <div class="string" data-s="0" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div>
                 <div class="finger-dot" style="left:37.5%" data-show="2"></div>
                 <div class="finger-dot" style="left:62.5%" data-show="3"></div>
+                <div class="finger-dot" style="left:87.5%" data-show="4"></div>
             </div>
         </div>
     </div>
@@ -176,7 +186,7 @@
     </div>
 
     <script>
-        // 1. CONFIGURACIÓN FIREBASE (AL INICIO PARA QUE NO FALLE)
+        // --- 1. FIREBASE SETUP ---
         const firebaseConfig = {
             apiKey: "AIzaSyCvzZNhb97ABzhKalhPppHwcfUMG5lGVyg",
             authDomain: "regalo-sofi-31bd7.firebaseapp.com",
@@ -190,59 +200,47 @@
         try {
             firebase.initializeApp(firebaseConfig);
             var database = firebase.database();
-            console.log("Firebase conectado correctamente");
-        } catch (e) {
-            console.error("Error Firebase:", e);
-            alert("Error conectando a la base de datos. El calendario podría no guardar notas.");
-        }
+            console.log("Firebase conectado");
+        } catch (e) { console.error("Error Firebase:", e); }
 
-        // 2. AUDIO CONTEXT (PARA UKELELE)
+        // --- 2. AUDIO INIT ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
         function startExperience() {
-            // Activar audio al hacer clic
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('start-screen').style.display = 'none';
-            }, 1000);
+            setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; }, 1000);
+            // Iniciar 3D después del click para asegurar carga
+            init3D();
         }
 
-        // 3. LÓGICA DEL UKELELE
-        // Frecuencias cuerdas al aire (A4, E4, C4, G4 - Orden visual de abajo a arriba)
-        // Indices visuales: 0=A (Abajo), 1=E, 2=C, 3=G (Arriba)
+        // --- 3. UKELELE LÓGICA ---
+        // Frecuencias base [A4, E4, C4, G4]
         const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
-        
-        // Mapa de trastes para cada cuerda [A, E, C, G]
+        // Mapa de acordes [Traste A, Traste E, Traste C, Traste G]
         const chords = {
             'C':  [3, 0, 0, 0],
             'G':  [2, 3, 2, 0],
             'F':  [0, 1, 0, 2],
-            'Am': [0, 0, 0, 2]
+            'Am': [0, 0, 0, 2],
+            // Nuevos acordes
+            'Dm': [0, 1, 2, 2],
+            'Em': [2, 3, 4, 0],
+            'A':  [0, 0, 1, 2],
+            'E7': [2, 0, 2, 1]
         };
         let currentShape = chords['C'];
 
         function setChord(name) {
             currentShape = chords[name];
-            // Actualizar botones
             document.querySelectorAll('.chord-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
             
-            // Actualizar puntos visuales
             const strings = document.querySelectorAll('.string');
             strings.forEach((str, i) => {
-                // i=0 es G (Top), i=3 es A (Bottom) en HTML visual
-                // Mi array openFreqs está [A, E, C, G] (0,1,2,3)
-                // Mapeo: HTML index 0 (G) -> Logic index 3
-                // HTML index 3 (A) -> Logic index 0
+                // Mapeo visual (i=0 es Top/G) a lógico (index 3 es G)
                 const logicIdx = 3 - i; 
                 const fret = currentShape[logicIdx];
-                
-                // Reset dots
                 str.querySelectorAll('.finger-dot').forEach(d => d.style.display = 'none');
-                
                 str.setAttribute('data-f', fret);
                 if(fret > 0) {
                     const dot = str.querySelector(`.finger-dot[data-show="${fret}"]`);
@@ -250,34 +248,26 @@
                 }
             });
         }
-        // Iniciar visualmente
-        setTimeout(() => setChord('C'), 500);
+        setTimeout(() => setChord('C'), 500); // Iniciar visualmente
 
         function playString(idx) {
-            // idx viene del HTML: 0=A, 1=E, 2=C, 3=G
             const fret = currentShape[idx];
             const freq = openFreqs[idx] * Math.pow(2, fret/12);
             
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.frequency.value = freq;
             
-            osc.type = 'triangle'; // Sonido suave
-            osc.frequency.value = freq;
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            osc.connect(gain); gain.connect(audioCtx.destination);
             
             const now = audioCtx.currentTime;
             gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.5, now + 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+            gain.gain.linearRampToValueAtTime(0.4, now + 0.02); // Ataque más suave
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
             
-            osc.start(now);
-            osc.stop(now + 1.5);
+            osc.start(now); osc.stop(now + 1.5);
 
-            // Animación visual
-            // Mapear idx logico a elemento visual
-            // Logic 0 (A) -> HTML 3
+            // Animación
             const visualIdx = 3 - idx; 
             const strEl = document.querySelectorAll('.string')[visualIdx];
             if(strEl) {
@@ -288,35 +278,21 @@
 
         // Eventos de rasgueo
         const fretboard = document.getElementById('fretboard');
-        fretboard.addEventListener('mousemove', (e) => {
-            if(e.buttons === 1) checkStrum(e);
-        });
-        fretboard.addEventListener('touchmove', (e) => {
-            checkStrum(e.touches[0]);
-        }, {passive:true});
+        fretboard.addEventListener('mousemove', (e) => { if(e.buttons === 1) checkStrum(e); });
+        fretboard.addEventListener('touchmove', (e) => { checkStrum(e.touches[0]); }, {passive:true});
 
         function checkStrum(pointer) {
-            // Detectar sobre qué cuerda pasa
             const el = document.elementFromPoint(pointer.clientX, pointer.clientY);
-            if(el && el.classList.contains('string')) {
-                if(!el.classList.contains('vibrating')) {
-                    // Obtener indice logico desde HTML data-s
-                    const sIdx = parseInt(el.getAttribute('data-s')); // HTML guarda 0..3
-                    // Pero mi logica usa data-s inverso? Revisemos HTML
-                    // HTML string 0 -> data-s="3" (G) => Logic index 3
-                    playString(sIdx);
-                }
+            if(el && el.classList.contains('string') && !el.classList.contains('vibrating')) {
+                playString(parseInt(el.getAttribute('data-s')));
             }
         }
-        // Click simple
         document.querySelectorAll('.string').forEach(s => {
-            s.addEventListener('mousedown', () => {
-                playString(parseInt(s.getAttribute('data-s')));
-            });
+            s.addEventListener('mousedown', () => playString(parseInt(s.getAttribute('data-s'))));
         });
 
 
-        // 4. CALENDARIO + FIREBASE
+        // --- 4. CALENDARIO ---
         let currentDate = new Date();
         const monthYearEl = document.getElementById('monthYear');
         const calendarGrid = document.getElementById('calendarGrid');
@@ -326,8 +302,7 @@
         let allNotes = {};
 
         if(database) {
-            const notesRef = database.ref('calendario_notas');
-            notesRef.on('value', (snapshot) => {
+            database.ref('calendario_notas').on('value', (snapshot) => {
                 allNotes = snapshot.val() || {};
                 renderCalendar();
             });
@@ -340,26 +315,18 @@
             calendarGrid.innerHTML = '';
             
             ['D','L','M','X','J','V','S'].forEach(d => {
-                const el = document.createElement('div');
-                el.innerText = d; el.style.color='#777';
-                calendarGrid.appendChild(el);
+                const el = document.createElement('div'); el.innerText = d; el.style.color='#777'; calendarGrid.appendChild(el);
             });
-
             const firstDay = new Date(year, month, 1).getDay();
             for(let i=0; i<firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
-
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
 
             for(let i=1; i<=daysInMonth; i++) {
-                const cell = document.createElement('div');
-                cell.className = 'day-cell';
-                cell.innerText = i;
+                const cell = document.createElement('div'); cell.className = 'day-cell'; cell.innerText = i;
                 const key = `${i}-${month}-${year}`;
-                
-                if(i===today.getDate() && month===today.getMonth()) cell.classList.add('today');
+                if(i===today.getDate() && month===today.getMonth() && year===today.getFullYear()) cell.classList.add('today');
                 if(allNotes[key]) cell.classList.add('has-note');
-                
                 cell.onclick = () => {
                     selectedDateKey = key;
                     document.getElementById('modalDateTitle').innerText = key.replace(/-/g, '/');
@@ -369,46 +336,43 @@
                 calendarGrid.appendChild(cell);
             }
         }
-        
         function changeMonth(d) { currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
         function closeModal() { modal.style.display = 'none'; }
         function saveNote() {
-            if(!database) return alert("Base de datos no conectada");
+            if(!database) return alert("Error de conexión");
             const val = noteText.value.trim();
             if(val) database.ref('calendario_notas/'+selectedDateKey).set(val);
             else database.ref('calendario_notas/'+selectedDateKey).remove();
             closeModal();
         }
-        
-        // Iniciar calendario (aunque esté vacío al principio)
         renderCalendar();
 
 
-        // 5. ESCENA 3D (SOFI)
+        // --- 5. 3D SOFI (POSICIÓN ALEATORIA) ---
         let camera, scene, renderer, controls, wordGroup;
         const container = document.getElementById('scene-container');
         
         function init3D() {
+            if(renderer) return; // Evitar doble inicio
             scene = new THREE.Scene();
             scene.fog = new THREE.FogExp2(0x000000, 0.002);
-            camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 1000);
-            camera.position.z = 400;
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 2000);
+            camera.position.z = 600; // Cámara más lejos para dar espacio
             
             renderer = new THREE.WebGLRenderer({alpha:true, antialias:true});
             renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
             
             controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableZoom = false; controls.enablePan = false;
+            controls.enableZoom = false; controls.enablePan = false; controls.enableDamping = true;
             
             // Estrellas fondo
             const geo = new THREE.BufferGeometry();
             const pos = [];
-            for(let i=0; i<2000; i++) pos.push((Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
+            for(let i=0; i<2000; i++) pos.push((Math.random()-0.5)*2000, (Math.random()-0.5)*2000, (Math.random()-0.5)*2000);
             geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
             scene.add(new THREE.Points(geo, new THREE.PointsMaterial({color:0x888888, size:1.5})));
             
-            // SOFI
             createSofi();
             animate();
         }
@@ -425,17 +389,22 @@
                 wordGroup.add(l, p);
             }
             const h=30, w=20;
-            // S
+            // S O F I
             addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,0,0), new THREE.Vector3(w,0,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0)], -60);
-            // O
             addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(w,h,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0), new THREE.Vector3(0,h,0)], -30);
-            // F
-            addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 10);
-            addLetter([new THREE.Vector3(0,0,0), new THREE.Vector3(w*0.7,0,0)], 10);
-            // I
+            addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 10); addLetter([new THREE.Vector3(0,0,0), new THREE.Vector3(w*0.7,0,0)], 10);
             addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 40);
 
-            wordGroup.rotation.set(Math.random()*6, Math.random()*6, Math.random()*6);
+            // --- ALEATORIEDAD TOTAL ---
+            // Rotación aleatoria
+            wordGroup.rotation.set(Math.random()*Math.PI*2, Math.random()*Math.PI*2, Math.random()*Math.PI*2);
+            // Posición aleatoria dentro de un cubo de 800x800x800
+            const spread = 800;
+            wordGroup.position.set(
+                (Math.random()-0.5) * spread,
+                (Math.random()-0.5) * spread,
+                (Math.random()-0.5) * spread
+            );
             scene.add(wordGroup);
         }
 
@@ -445,9 +414,8 @@
             renderer.render(scene, camera);
         }
         
-        // Iniciar 3D
-        init3D();
         window.addEventListener('resize', () => {
+            if(!camera) return;
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -458,29 +426,21 @@
         let currSong = 0;
         const player = document.getElementById('audioPlayer');
         let isPlaying = false;
-        
         function togglePlay() {
-            if(audioCtx.state === 'suspended') audioCtx.resume(); // Activar audio general
-            if(!playlist.length) return;
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            if(!playlist.length || !player) return;
             if(!player.src) player.src = playlist[0].file;
-            
             if(isPlaying) { player.pause(); document.getElementById('playBtn').innerText="▶"; }
             else { player.play(); document.getElementById('playBtn').innerText="⏸"; }
             isPlaying = !isPlaying;
         }
-        function nextSong() {
-            currSong = (currSong+1)%playlist.length;
+        function nextSong() { currSong = (currSong+1)%playlist.length; updatePlayer(); }
+        function prevSong() { currSong = (currSong-1+playlist.length)%playlist.length; updatePlayer(); }
+        function updatePlayer() {
             player.src = playlist[currSong].file;
             document.getElementById('songTitle').innerText = playlist[currSong].title;
             if(isPlaying) player.play();
         }
-        function prevSong() {
-            currSong = (currSong-1+playlist.length)%playlist.length;
-            player.src = playlist[currSong].file;
-            document.getElementById('songTitle').innerText = playlist[currSong].title;
-            if(isPlaying) player.play();
-        }
-
     </script>
 </body>
 </html>
