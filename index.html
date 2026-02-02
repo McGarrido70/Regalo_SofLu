@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>El Universo de Sofi</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -39,70 +39,77 @@
         .has-note::after { content: '★'; position: absolute; top: 5px; right: 5px; color: #ffd700; font-size: 0.8rem; animation: spin 3s infinite linear; }
         @keyframes spin { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
 
-        /* --- GUITARRA CÓSMICA (NUEVO) --- */
-        .guitar-section {
-            width: 85%; margin: 0 auto 120px auto;
-            text-align: center;
-            background: linear-gradient(180deg, #1a0b2e 0%, #0f0f0f 100%);
-            padding: 30px; border-radius: 15px; border: 1px solid #d400ff;
-            box-shadow: inset 0 0 20px rgba(212, 0, 255, 0.2);
+        /* --- UKELELE INTERACTIVO (NUEVO) --- */
+        .uke-section {
+            width: 85%; max-width: 500px; margin: 0 auto 120px auto;
+            text-align: center; background: #1a1105; /* Color madera oscura */
+            padding: 30px; border-radius: 20px; border: 3px solid #3e2710;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 20px rgba(212, 0, 255, 0.2);
         }
         
-        .chord-display {
-            height: 60px; margin-bottom: 20px;
-            display: flex; justify-content: center; align-items: center;
-        }
-        #active-chord-name {
-            font-size: 2.5rem; color: #d400ff; font-weight: bold;
-            text-shadow: 0 0 15px #d400ff, 0 0 30px #00ffff;
-            opacity: 0; transition: opacity 0.3s;
-        }
-        
-        .chord-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px; margin-top: 20px;
-        }
-        
+        /* Botones de acordes */
+        .chord-selectors { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;}
         .chord-btn {
-            background: rgba(20,20,20,0.8); border: 2px solid #555;
-            color: white; padding: 20px 10px; border-radius: 10px;
-            font-size: 1.2rem; cursor: pointer; position: relative;
-            transition: all 0.2s; overflow: hidden;
+            background: #3e2710; color: #e0c0a0; border: 2px solid #5c3a1d;
+            padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold;
+            transition: 0.2s;
         }
-        
-        /* Efecto al tocar el acorde */
-        .chord-btn.playing {
-            border-color: #00ffff; background: rgba(0, 255, 255, 0.1);
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
-            transform: scale(0.95); color: #00ffff;
-        }
-        
-        /* Pequeña ayuda visual de las cuerdas */
-        .chord-btn::before {
-            content: '❚ ❚ ❚ ❚ ❚ ❚'; position: absolute;
-            bottom: 5px; left: 0; width: 100%; color: #333; font-size: 0.6rem;
-            letter-spacing: 3px; opacity: 0.5;
-        }
-        .chord-btn.playing::before { color: #d400ff; opacity: 1; }
+        .chord-btn.active { background: #d400ff; color: white; border-color: #ff00de; transform: scale(1.1); box-shadow: 0 0 15px #d400ff; }
 
-        /* Subtítulo del acorde (Mayor/Menor) */
-        .chord-sub { display: block; font-size: 0.7rem; color: #aaa; margin-top: 5px; }
+        /* El diapasón (fretboard) */
+        .fretboard {
+            position: relative; height: 180px; background: #2a1b0e;
+            border-radius: 10px; border: 2px solid #3e2710;
+            display: flex; flex-direction: column; justify-content: space-evenly;
+            overflow: hidden; cursor: pointer;
+             /* Evita seleccionar texto al rasguear rápido */
+            -webkit-user-select: none; user-select: none;
+        }
+        
+        /* Trastes (líneas verticales) */
+        .frets-container { position: absolute; top:0; left:0; width: 100%; height: 100%; pointer-events: none; }
+        .fret-line { position: absolute; width: 2px; height: 100%; background: #5c442e; }
+        /* Cejilla */
+        .nut { position: absolute; left: 0; width: 5px; height: 100%; background: #e0c0a0; z-index: 5; }
+
+        /* Cuerdas (líneas horizontales interactivas) */
+        .string {
+            position: relative; width: 100%; height: 40px; /* Área táctil grande */
+            display: flex; align-items: center; z-index: 10;
+        }
+        /* La línea visual de la cuerda */
+        .string::before {
+            content: ''; position: absolute; left: 0; right: 0; height: 2px;
+            background: rgba(255,255,255,0.6); box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            transition: 0.1s;
+        }
+        /* Efecto al vibrar */
+        .string.vibrating::before { background: #d400ff; height: 3px; box-shadow: 0 0 10px #d400ff; }
+
+        /* Puntos de los dedos (indicadores de acorde) */
+        .finger-dot {
+            position: absolute; width: 16px; height: 16px; background: #d400ff;
+            border-radius: 50%; box-shadow: 0 0 5px #ff00de; z-index: 20;
+            display: none; /* Ocultos por defecto */
+            top: 50%; transform: translateY(-50%) translateX(-50%);
+        }
+        /* Mostrar el punto si la cuerda tiene la clase 'FretX' */
+        .string[data-fret="1"] .dot-f1 { display: block; }
+        .string[data-fret="2"] .dot-f2 { display: block; }
+        .string[data-fret="3"] .dot-f3 { display: block; }
 
 
         /* Modal y Player */
         #noteModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #151515; padding: 30px; border-radius: 10px; width: 300px; border: 1px solid #d400ff; text-align: center; }
         textarea { width: 100%; height: 100px; background: #222; color: white; border: 1px solid #444; margin: 15px 0; border-radius: 5px; padding: 10px; }
-        
         #music-player { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 15, 15, 0.95); border: 1px solid #d400ff; padding: 10px 20px; border-radius: 50px; z-index: 1000; display: flex; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(212, 0, 255, 0.2); }
         .controls button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
         .song-info { font-size: 0.85rem; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d400ff; }
 
         @media (max-width: 768px) {
             .bottom-section { flex-direction: column; }
-            .card, .calendar-section, .guitar-section { width: 90%; box-sizing: border-box; }
-            .chord-grid { grid-template-columns: repeat(2, 1fr); } /* 2 columnas en celular */
+            .card, .calendar-section, .uke-section { width: 90%; box-sizing: border-box; }
             #music-player { left: 5%; width: 80%; justify-content: space-between; }
         }
     </style>
@@ -114,15 +121,15 @@
 
     <div class="bottom-section">
         <div class="card">
-            <h2>Hola Sofi</h2>
-            <p>Sé que siempre has querido aprender guitarra. Este es tu primer paso en el universo de la música.</p>
-            <p>Aquí abajo tienes una guitarra cósmica. Toca los botones para rasguear tus primeros acordes reales.</p>
+            <h2>Tu Ukelele Virtual</h2>
+            <p>Siempre quisiste aprender. Aquí tienes uno mágico para empezar. Es muy fácil:</p>
+            <p>1. Elige un acorde arriba (ej: 'C' es Do Mayor).</p>
+            <p>2. Pasa el mouse o el dedo sobre las cuerdas para rasguear. ¡Suena de verdad!</p>
         </div>
         <div class="card">
-            <h2>Instrucciones</h2>
-            <p>🎸 <b>Guitarra:</b> Haz clic en los botones de acordes (C, G, D...) para escuchar cómo suenan.</p>
-            <p>📅 <b>Calendario:</b> Anota nuestros momentos en la nube.</p>
-            <p>🎵 <b>Música:</b> Dale play para inspirarte.</p>
+            <h2>Calendario & Música</h2>
+            <p>No olvides dejarme una notita en el calendario de abajo. Se guardan en nuestra nube.</p>
+            <p>Dale play a la música para inspirarte mientras tocas.</p>
         </div>
     </div>
 
@@ -135,21 +142,44 @@
         <div class="days-grid" id="calendarGrid"></div>
     </div>
 
-    <div class="guitar-section">
-        <h2>🎸 Acordes Cósmicos</h2>
-        <div class="chord-display">
-            <span id="active-chord-name"></span>
-        </div>
+    <div class="uke-section">
+        <h2>Ukelele Cósmico 🎵</h2>
         
-        <div class="chord-grid">
-            <button class="chord-btn" onclick="playChord('C')">C <span class="chord-sub">Do Mayor</span></button>
-            <button class="chord-btn" onclick="playChord('G')">G <span class="chord-sub">Sol Mayor</span></button>
-            <button class="chord-btn" onclick="playChord('D')">D <span class="chord-sub">Re Mayor</span></button>
-            <button class="chord-btn" onclick="playChord('A')">A <span class="chord-sub">La Mayor</span></button>
-            <button class="chord-btn" onclick="playChord('E')">E <span class="chord-sub">Mi Mayor</span></button>
-            <button class="chord-btn" onclick="playChord('Am')">Am <span class="chord-sub">La Menor</span></button>
-            <button class="chord-btn" onclick="playChord('Em')">Em <span class="chord-sub">Mi Menor</span></button>
-            <button class="chord-btn" onclick="playChord('Dm')">Dm <span class="chord-sub">Re Menor</span></button>
+        <div class="chord-selectors">
+            <button class="chord-btn active" onclick="setChord('C')">C (Do)</button>
+            <button class="chord-btn" onclick="setChord('G')">G (Sol)</button>
+            <button class="chord-btn" onclick="setChord('Am')">Am (La Menor)</button>
+            <button class="chord-btn" onclick="setChord('F')">F (Fa)</button>
+        </div>
+
+        <div class="fretboard" id="fretboardArea">
+            <div class="nut"></div>
+            <div class="frets-container">
+                <div class="fret-line" style="left: 25%;"></div>
+                <div class="fret-line" style="left: 50%;"></div>
+                <div class="fret-line" style="left: 75%;"></div>
+            </div>
+
+            <div class="string" data-string-idx="3" data-fret="0">
+                <div class="finger-dot dot-f1" style="left: 12.5%;"></div>
+                <div class="finger-dot dot-f2" style="left: 37.5%;"></div>
+                <div class="finger-dot dot-f3" style="left: 62.5%;"></div>
+            </div>
+            <div class="string" data-string-idx="2" data-fret="0">
+                <div class="finger-dot dot-f1" style="left: 12.5%;"></div>
+                <div class="finger-dot dot-f2" style="left: 37.5%;"></div>
+                <div class="finger-dot dot-f3" style="left: 62.5%;"></div>
+            </div>
+            <div class="string" data-string-idx="1" data-fret="0">
+                <div class="finger-dot dot-f1" style="left: 12.5%;"></div>
+                <div class="finger-dot dot-f2" style="left: 37.5%;"></div>
+                <div class="finger-dot dot-f3" style="left: 62.5%;"></div>
+            </div>
+            <div class="string" data-string-idx="0" data-fret="0">
+                <div class="finger-dot dot-f1" style="left: 12.5%;"></div>
+                <div class="finger-dot dot-f2" style="left: 37.5%;"></div>
+                <div class="finger-dot dot-f3" style="left: 62.5%;"></div>
+            </div>
         </div>
     </div>
 
@@ -175,7 +205,7 @@
     </div>
 
     <script>
-        // --- 1. FIREBASE (SE MANTIENE IGUAL) ---
+        // --- 1. FIREBASE (MANTIENE TU CONFIGURACIÓN AL FINAL) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCvzZNhb97ABzhKalhPppHwcfUMG5lGVyg",
             authDomain: "regalo-sofi-31bd7.firebaseapp.com",
@@ -189,81 +219,117 @@
         const database = firebase.database();
 
 
-        // --- 2. LÓGICA DE LA GUITARRA CÓSMICA (NUEVO) ---
+        // --- 2. LÓGICA DEL UKELELE (NUEVO & MEJORADO) ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const chordDisplay = document.getElementById('active-chord-name');
-        let displayTimeout;
-
-        // Definición de los acordes (Qué trastes se pisan en las 6 cuerdas: E A D G B E)
-        // -1 significa que la cuerda no se toca (mute)
-        const chords = {
-            'C':  [-1, 3, 2, 0, 1, 0], // Do Mayor
-            'G':  [3, 2, 0, 0, 0, 3],  // Sol Mayor
-            'D':  [-1, -1, 0, 2, 3, 2], // Re Mayor
-            'A':  [-1, 0, 2, 2, 2, 0], // La Mayor
-            'E':  [0, 2, 2, 1, 0, 0],  // Mi Mayor
-            'Am': [-1, 0, 2, 2, 1, 0], // La Menor
-            'Em': [0, 2, 2, 0, 0, 0],  // Mi Menor
-            'Dm': [-1, -1, 0, 2, 3, 1] // Re Menor
+        
+        // Afinación estándar ukelele (G4, C4, E4, A4) - Re-entrant
+        const openStrings = [392.00, 261.63, 329.63, 440.00]; 
+        
+        // Mapa de acordes: [cuerda4, cuerda3, cuerda2, cuerda1] (Traste a pisar)
+        const chordShapes = {
+            'C':  [0, 0, 0, 3],
+            'G':  [0, 2, 3, 2],
+            'Am': [2, 0, 0, 0],
+            'F':  [2, 0, 1, 0]
         };
+        let currentChord = 'C'; // Acorde inicial
 
-        // Frecuencias base de las cuerdas al aire (Afinación Estándar)
-        const baseTuning = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
-
-        function playChord(chordName) {
-            // 1. Efectos visuales
-            const btn = event.currentTarget;
-            btn.classList.add('playing');
-            setTimeout(() => btn.classList.remove('playing'), 300);
+        // Función para cambiar el acorde activo
+        function setChord(chordName) {
+            currentChord = chordName;
+            // Actualizar botones visualmente
+            document.querySelectorAll('.chord-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
             
-            chordDisplay.innerText = chordName;
-            chordDisplay.style.opacity = 1;
-            clearTimeout(displayTimeout);
-            displayTimeout = setTimeout(() => chordDisplay.style.opacity = 0, 2000);
-
-            // 2. Generar sonido (Rasgueo)
-            const fretPositions = chords[chordName];
-            const now = audioCtx.currentTime;
-
-            fretPositions.forEach((fret, stringIndex) => {
-                if (fret >= 0) {
-                    // Calcular la frecuencia de la nota exacta basada en el traste
-                    // Fórmula: FrecuenciaBase * 2^(traste/12)
-                    let frequency = baseTuning[stringIndex] * Math.pow(2, fret / 12);
-                    
-                    // Reproducir la cuerda con un pequeño retraso (efecto rasgueo)
-                    // Las cuerdas graves suenan primero, las agudas un poco después
-                    playString(frequency, now + (stringIndex * 0.04)); 
-                }
+            // Actualizar puntos en el diapasón
+            const shape = chordShapes[chordName];
+            const stringElements = document.querySelectorAll('.string');
+            // Invertimos el orden porque en HTML la cuerda 0 (G) es la última visualmente
+            shape.forEach((fret, idx) => {
+                // Mapeo: idx 0 -> string 3 (G), idx 1 -> string 2 (C)...
+                const htmlStringIdx = 3 - idx; 
+                stringElements[htmlStringIdx].setAttribute('data-fret', fret);
             });
         }
 
-        // Sintetizador de cuerda de guitarra
-        function playString(freq, time) {
+        // Inicializar con Do Mayor
+        setChord('C');
+
+        // SINTETIZADOR DE CUERDA DE NAILON (Suave)
+        function pluckString(stringIdx) {
+            // 1. Calcular frecuencia según el traste pisado actualmente
+            const stringEl = document.querySelector(`.string[data-string-idx="${stringIdx}"]`);
+            const fret = parseInt(stringEl.getAttribute('data-fret'));
+            const frequency = openStrings[3 - stringIdx] * Math.pow(2, fret / 12); // 3-idx para ajustar al orden del array
+            
+            // 2. Efecto visual de vibración
+            stringEl.classList.add('vibrating');
+            setTimeout(() => stringEl.classList.remove('vibrating'), 200);
+
+            // 3. Generar sonido
+            const now = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
-            
-            // Usamos onda "sawtooth" filtrada para un sonido más metálico/cuerda
-            osc.type = 'sawtooth'; 
-            osc.frequency.value = freq;
-
-            // Filtro para suavizar el sonido metálico
             const filter = audioCtx.createBiquadFilter();
-            filter.type = "lowpass";
-            filter.frequency.value = 2000; // Cortar frecuencias muy agudas
+
+            // Usamos onda triangular para un sonido más dulce (tipo flauta/nailon)
+            osc.type = 'triangle';
+            osc.frequency.value = frequency;
+
+            // Filtro pasa-bajos para quitar el brillo digital
+            filter.type = 'lowpass';
+            filter.frequency.value = 3000;
+
+            // Envolvente (Cómo empieza y termina el sonido)
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.6, now + 0.01); // Ataque rápido (el pellizco)
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5); // Decaimiento largo
 
             osc.connect(filter);
             filter.connect(gainNode);
             gainNode.connect(audioCtx.destination);
 
-            // Envolvente de sonido (Attack rápido, Decay largo como una cuerda)
-            gainNode.gain.setValueAtTime(0, time);
-            gainNode.gain.linearRampToValueAtTime(0.4, time + 0.02); // Ataque rápido
-            gainNode.gain.exponentialRampToValueAtTime(0.001, time + 2); // Se apaga lentamente
-
-            osc.start(time);
-            osc.stop(time + 2); // Detener después de 2 segundos
+            osc.start(now);
+            osc.stop(now + 1.5);
         }
+
+        // MANEJO DE INTERACCIÓN (Rasgueo y Arpegio)
+        const fretboard = document.getElementById('fretboardArea');
+        let isStrumming = false;
+
+        // Detectar inicio de interacción (Mouse o Táctil)
+        fretboard.addEventListener('mousedown', () => isStrumming = true);
+        fretboard.addEventListener('touchstart', () => isStrumming = true, {passive: true});
+        
+        // Detectar fin de interacción
+        window.addEventListener('mouseup', () => isStrumming = false);
+        window.addEventListener('touchend', () => isStrumming = false);
+
+        const strings = document.querySelectorAll('.string');
+        strings.forEach(str => {
+            const idx = parseInt(str.getAttribute('data-string-idx'));
+            
+            // Arpegio: Clic o toque simple en una cuerda
+            str.addEventListener('mousedown', () => pluckString(idx));
+            
+            // Rasgueo: Pasar el mouse por encima mientras se hace clic
+            str.addEventListener('mouseenter', () => {
+                if(isStrumming) pluckString(idx);
+            });
+
+             // Rasgueo Táctil (Más complejo, detectamos movimiento del dedo)
+            str.addEventListener('touchmove', (e) => {
+                // Evitar que suene múltiples veces en el mismo "movimiento" sobre la misma cuerda
+                if(isStrumming && !str.classList.contains('vibrating')) {
+                     // Verificar si el toque realmente está sobre esta cuerda
+                    const touch = e.touches[0];
+                    const rect = str.getBoundingClientRect();
+                    if(touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+                         pluckString(idx);
+                    }
+                }
+            }, {passive: true});
+        });
 
 
         // --- 3. CALENDARIO CONECTADO (SE MANTIENE IGUAL) ---
