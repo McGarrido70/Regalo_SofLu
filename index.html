@@ -12,57 +12,82 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        /* --- ESTILOS (Iguales a los anteriores, optimizados) --- */
-        body { margin: 0; background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        /* --- ESTILOS GENERALES --- */
+        body { margin: 0; background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; user-select: none; }
         
+        /* Contenedor 3D */
         #scene-container {
-            width: 85%; height: 450px; margin: 40px auto; position: relative;
+            width: 85%; height: 400px; margin: 40px auto; position: relative;
             border: 1px solid #333; border-radius: 15px; overflow: hidden;
-            box-shadow: 0 0 40px rgba(212, 0, 255, 0.1); cursor: grab;
+            box-shadow: 0 0 30px rgba(212, 0, 255, 0.15); cursor: grab;
         }
         #scene-container:active { cursor: grabbing; }
+        .instruction { text-align: center; color: #888; font-size: 0.9rem; margin-top: -30px; margin-bottom: 40px; }
 
-        .instruction { text-align: center; color: #888; font-size: 0.9rem; margin-top: -30px; margin-bottom: 50px; }
-
+        /* Tarjetas */
         .bottom-section { display: flex; justify-content: space-between; width: 85%; margin: 0 auto 50px auto; gap: 20px; }
         .card { background: #0f0f0f; border: 1px solid #222; padding: 25px; width: 48%; border-radius: 15px; }
         h2 { color: #d400ff; margin-top: 0; font-size: 1.4rem; }
         p { line-height: 1.6; color: #ccc; font-size: 0.95rem; }
 
-        .calendar-section {
-            width: 85%; margin: 0 auto 100px auto; background: #0f0f0f;
-            border: 1px solid #222; border-radius: 15px; padding: 20px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
+        /* Calendario */
+        .calendar-section { width: 85%; margin: 0 auto 80px auto; background: #0f0f0f; border: 1px solid #222; border-radius: 15px; padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .btn-nav { background: #222; color: #d400ff; border: 1px solid #d400ff; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
         .day-name { color: #888; font-weight: bold; padding-bottom: 10px; }
-        .day-cell { background: #1a1a1a; padding: 15px; border-radius: 8px; cursor: pointer; position: relative; min-height: 40px; }
+        .day-cell { background: #1a1a1a; padding: 15px; border-radius: 8px; cursor: pointer; position: relative; min-height: 40px; transition: 0.2s; }
         .day-cell:hover { background: #2a2a2a; border: 1px solid #555; }
         .day-cell.today { border: 1px solid #d400ff; color: #d400ff; font-weight: bold; }
         
         /* Estrella giratoria si hay nota */
-        .has-note::after {
-            content: '★'; position: absolute; top: 5px; right: 5px; color: #ffd700; font-size: 0.8rem;
-            animation: spin 3s infinite linear;
-        }
+        .has-note::after { content: '★'; position: absolute; top: 5px; right: 5px; color: #ffd700; font-size: 0.8rem; animation: spin 3s infinite linear; }
         @keyframes spin { 0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);} }
 
+        /* --- PIANO ESPACIAL --- */
+        .piano-section {
+            width: 85%; margin: 0 auto 120px auto;
+            text-align: center;
+            background: linear-gradient(180deg, #0f0f0f 0%, #1a0b2e 100%);
+            padding: 30px; border-radius: 15px; border: 1px solid #333;
+        }
+        .piano-keys {
+            display: flex; justify-content: center; position: relative;
+            height: 200px; margin-top: 20px;
+        }
+        .key {
+            width: 60px; height: 100%; background: white; border: 1px solid #ccc;
+            border-radius: 0 0 5px 5px; margin: 0 2px; cursor: pointer;
+            position: relative; z-index: 1; transition: background 0.1s;
+        }
+        .key:active, .key.active { background: #d400ff; box-shadow: 0 0 15px #d400ff; border: none; }
+        
+        .key.black {
+            width: 40px; height: 60%; background: #111; z-index: 2;
+            position: absolute; margin-left: -20px; 
+            border-radius: 0 0 3px 3px;
+        }
+        .key.black:active, .key.black.active { background: #00ffff; box-shadow: 0 0 15px #00ffff; }
+        
+        .key::after {
+            content: attr(data-key); position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center;
+            color: #555; font-size: 0.8rem; font-weight: bold; pointer-events: none;
+        }
+        .key.black::after { color: #888; bottom: 5px; }
+
+        /* Modal y Player */
         #noteModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: #151515; padding: 30px; border-radius: 10px; width: 300px; border: 1px solid #d400ff; text-align: center; }
         textarea { width: 100%; height: 100px; background: #222; color: white; border: 1px solid #444; margin: 15px 0; border-radius: 5px; padding: 10px; }
         
-        #music-player {
-            position: fixed; bottom: 20px; left: 20px; background: rgba(15, 15, 15, 0.95);
-            border: 1px solid #d400ff; padding: 10px 20px; border-radius: 50px; z-index: 1000;
-            display: flex; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(212, 0, 255, 0.2);
-        }
+        #music-player { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 15, 15, 0.95); border: 1px solid #d400ff; padding: 10px 20px; border-radius: 50px; z-index: 1000; display: flex; align-items: center; gap: 15px; box-shadow: 0 0 15px rgba(212, 0, 255, 0.2); }
         .controls button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
+        .song-info { font-size: 0.85rem; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d400ff; }
 
         @media (max-width: 768px) {
             .bottom-section { flex-direction: column; }
-            .card, .calendar-section { width: 90%; box-sizing: border-box; }
+            .card, .calendar-section, .piano-section { width: 90%; box-sizing: border-box; }
+            .key { width: 40px; } .key.black { width: 30px; margin-left: -15px; }
             #music-player { left: 5%; width: 80%; justify-content: space-between; }
         }
     </style>
@@ -70,17 +95,19 @@
 <body>
 
     <div id="scene-container"></div>
-    <p class="instruction">✨ Encuentra tu nombre "SOFI" en las estrellas ✨</p>
+    <p class="instruction">✨ Busca "SOFI" en las estrellas ✨</p>
 
     <div class="bottom-section">
         <div class="card">
-            <h2>Para Sofi</h2>
-            <p>Este calendario ahora está conectado a la nube.</p>
-            <p>Lo que escribas aquí, yo lo podré leer desde mi casa, y lo que yo escriba te aparecerá a ti. Es nuestro chat secreto.</p>
+            <h2>Hola Sofi</h2>
+            <p>Bienvenida a tu universo personal. Arriba, las estrellas esconden tu nombre (gira para encontrarlo).</p>
+            <p>Abajo tienes un calendario mágico: lo que escribas ahí se guardará en la nube y yo podré leerlo desde donde esté.</p>
         </div>
         <div class="card">
-            <h2>Música & Recuerdos</h2>
-            <p>Dale play y busca tu nota del día.</p>
+            <h2>Instrucciones</h2>
+            <p>🎹 <b>Piano:</b> Toca las teclas o usa tu teclado (A, S, D...).</p>
+            <p>📅 <b>Calendario:</b> Haz clic en un día para dejarme una nota.</p>
+            <p>🎵 <b>Música:</b> Dale play abajo a la izquierda.</p>
         </div>
     </div>
 
@@ -91,6 +118,25 @@
             <button class="btn-nav" onclick="changeMonth(1)">❯</button>
         </div>
         <div class="days-grid" id="calendarGrid"></div>
+    </div>
+
+    <div class="piano-section">
+        <h2>🎹 Piano Espacial</h2>
+        <div class="piano-keys">
+            <div class="key" data-note="C4" data-key="A" onclick="playTone(261.63)"></div>
+            <div class="key black" data-note="Cs4" data-key="W" style="left: 45px;" onclick="playTone(277.18)"></div>
+            <div class="key" data-note="D4" data-key="S" onclick="playTone(293.66)"></div>
+            <div class="key black" data-note="Ds4" data-key="E" style="left: 108px;" onclick="playTone(311.13)"></div>
+            <div class="key" data-note="E4" data-key="D" onclick="playTone(329.63)"></div>
+            <div class="key" data-note="F4" data-key="F" onclick="playTone(349.23)"></div>
+            <div class="key black" data-note="Fs4" data-key="T" style="left: 235px;" onclick="playTone(369.99)"></div>
+            <div class="key" data-note="G4" data-key="G" onclick="playTone(392.00)"></div>
+            <div class="key black" data-note="Gs4" data-key="Y" style="left: 298px;" onclick="playTone(415.30)"></div>
+            <div class="key" data-note="A4" data-key="H" onclick="playTone(440.00)"></div>
+            <div class="key black" data-note="As4" data-key="U" style="left: 360px;" onclick="playTone(466.16)"></div>
+            <div class="key" data-note="B4" data-key="J" onclick="playTone(493.88)"></div>
+            <div class="key" data-note="C5" data-key="K" onclick="playTone(523.25)"></div>
+        </div>
     </div>
 
     <div id="noteModal">
@@ -115,18 +161,16 @@
     </div>
 
     <script>
-        // ---------------------------------------------------------
-        // 1. CONFIGURACIÓN DE FIREBASE (¡PEGA TUS DATOS AQUÍ!)
-        // ---------------------------------------------------------
+        // --- 1. CONFIGURACIÓN FIREBASE INTEGRADA ---
         const firebaseConfig = {
-  apiKey: "AIzaSyCvzZNhb97ABzhKalhPppHwcfUMG5lGVyg",
-  authDomain: "regalo-sofi-31bd7.firebaseapp.com",
-  databaseURL: "https://regalo-sofi-31bd7-default-rtdb.firebaseio.com",
-  projectId: "regalo-sofi-31bd7",
-  storageBucket: "regalo-sofi-31bd7.firebasestorage.app",
-  messagingSenderId: "896831826087",
-  appId: "1:896831826087:web:d9a067f38828a5c1eb1382"
-};
+            apiKey: "AIzaSyCvzZNhb97ABzhKalhPppHwcfUMG5lGVyg",
+            authDomain: "regalo-sofi-31bd7.firebaseapp.com",
+            databaseURL: "https://regalo-sofi-31bd7-default-rtdb.firebaseio.com",
+            projectId: "regalo-sofi-31bd7",
+            storageBucket: "regalo-sofi-31bd7.firebasestorage.app",
+            messagingSenderId: "896831826087",
+            appId: "1:896831826087:web:d9a067f38828a5c1eb1382"
+        };
         
         // Inicializar Firebase
         if (!firebase.apps.length) {
@@ -135,23 +179,61 @@
         const database = firebase.database();
 
 
-        // ---------------------------------------------------------
-        // 2. LÓGICA DEL CALENDARIO CONECTADO
-        // ---------------------------------------------------------
+        // --- 2. LÓGICA DEL PIANO ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(freq) {
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.type = 'triangle'; 
+            osc.frequency.value = freq;
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
+            osc.stop(audioCtx.currentTime + 1.5);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            const keyMap = {
+                'a': { freq: 261.63, el: document.querySelector('[data-key="A"]') },
+                'w': { freq: 277.18, el: document.querySelector('[data-key="W"]') },
+                's': { freq: 293.66, el: document.querySelector('[data-key="S"]') },
+                'e': { freq: 311.13, el: document.querySelector('[data-key="E"]') },
+                'd': { freq: 329.63, el: document.querySelector('[data-key="D"]') },
+                'f': { freq: 349.23, el: document.querySelector('[data-key="F"]') },
+                't': { freq: 369.99, el: document.querySelector('[data-key="T"]') },
+                'g': { freq: 392.00, el: document.querySelector('[data-key="G"]') },
+                'y': { freq: 415.30, el: document.querySelector('[data-key="Y"]') },
+                'h': { freq: 440.00, el: document.querySelector('[data-key="H"]') },
+                'u': { freq: 466.16, el: document.querySelector('[data-key="U"]') },
+                'j': { freq: 493.88, el: document.querySelector('[data-key="J"]') },
+                'k': { freq: 523.25, el: document.querySelector('[data-key="K"]') }
+            };
+            const note = keyMap[e.key.toLowerCase()];
+            if (note) {
+                playTone(note.freq);
+                note.el.classList.add('active');
+                setTimeout(() => note.el.classList.remove('active'), 150);
+            }
+        });
+
+
+        // --- 3. CALENDARIO CONECTADO A FIREBASE ---
         let currentDate = new Date();
         const monthYearEl = document.getElementById('monthYear');
         const calendarGrid = document.getElementById('calendarGrid');
         const modal = document.getElementById('noteModal');
         const noteText = document.getElementById('noteText');
         let selectedDateKey = null;
-        let allNotes = {}; // Aquí guardaremos las notas que vienen de la nube
+        let allNotes = {};
 
-        // Escuchar cambios en la base de datos en TIEMPO REAL
+        // Escuchar datos en tiempo real
         const notesRef = database.ref('calendario_notas');
         notesRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            allNotes = data || {}; // Si no hay datos, objeto vacío
-            renderCalendar(); // Volver a pintar el calendario con las nuevas notas
+            allNotes = snapshot.val() || {};
+            renderCalendar();
         });
 
         function renderCalendar() {
@@ -162,8 +244,7 @@
             
             const weekDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
             weekDays.forEach(day => {
-                const div = document.createElement('div');
-                div.className = 'day-name'; div.innerText = day; calendarGrid.appendChild(div);
+                const div = document.createElement('div'); div.className = 'day-name'; div.innerText = day; calendarGrid.appendChild(div);
             });
 
             const firstDayIndex = new Date(year, month, 1).getDay();
@@ -173,140 +254,86 @@
             const today = new Date();
 
             for(let i=1; i<=daysInMonth; i++){
-                const dayEl = document.createElement('div');
-                dayEl.className = 'day-cell';
-                dayEl.innerText = i;
-                
-                // Clave única para guardar (ej: "14-2-2024")
+                const dayEl = document.createElement('div'); dayEl.className = 'day-cell'; dayEl.innerText = i;
                 const dateKey = `${i}-${month}-${year}`;
-                
                 if(i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) dayEl.classList.add('today');
-
-                // VERIFICAR SI HAY NOTA EN LA NUBE
-                if(allNotes[dateKey]) {
-                    dayEl.classList.add('has-note');
-                    // Opcional: Mostrar preview al pasar mouse
-                    dayEl.title = "¡Hay un mensaje!";
-                }
-
+                if(allNotes[dateKey]) dayEl.classList.add('has-note');
                 dayEl.onclick = () => openModal(i, month, year);
                 calendarGrid.appendChild(dayEl);
             }
         }
-
-        function changeMonth(delta) {
-            currentDate.setMonth(currentDate.getMonth() + delta);
-            renderCalendar();
-        }
-
-        function openModal(day, month, year) {
-            selectedDateKey = `${day}-${month}-${year}`;
-            document.getElementById('modalDateTitle').innerText = `${day} / ${month+1} / ${year}`;
-            noteText.value = allNotes[selectedDateKey] || ''; // Cargar texto de la nube
+        function changeMonth(d) { currentDate.setMonth(currentDate.getMonth() + d); renderCalendar(); }
+        function openModal(d, m, y) {
+            selectedDateKey = `${d}-${m}-${y}`;
+            document.getElementById('modalDateTitle').innerText = `${d}/${m+1}/${y}`;
+            noteText.value = allNotes[selectedDateKey] || '';
             modal.style.display = 'flex';
         }
-
         function closeModal() { modal.style.display = 'none'; }
-
+        
         function saveNote() {
-            const texto = noteText.value.trim();
-            // Guardar en Firebase
-            if(texto === "") {
-                database.ref('calendario_notas/' + selectedDateKey).remove();
-            } else {
-                database.ref('calendario_notas/' + selectedDateKey).set(texto);
-            }
-            // No hace falta llamar a renderCalendar(), Firebase avisa automáticamente
+            const val = noteText.value.trim();
+            if(val==="") database.ref('calendario_notas/'+selectedDateKey).remove();
+            else database.ref('calendario_notas/'+selectedDateKey).set(val);
             closeModal();
-            alert("¡Mensaje enviado al universo! ☁️");
         }
 
-
-        // ---------------------------------------------------------
-        // 3. MÚSICA (ACTUALIZA TUS CANCIONES)
-        // ---------------------------------------------------------
+        // --- 4. PLAYER DE MÚSICA (Sube tus archivos mp3) ---
         const playlist = [
             { title: "Canción 1", file: "cancion1.mp3" },
             { title: "Canción 2", file: "cancion2.mp3" }
         ];
-        
         let currentSongIndex = 0;
         const audioPlayer = document.getElementById('audioPlayer');
         const playBtn = document.getElementById('playBtn');
         const titleLabel = document.getElementById('songTitle');
         let isPlaying = false;
 
-        function loadSong(index) {
-            if(playlist.length === 0) return;
-            audioPlayer.src = playlist[index].file;
-            titleLabel.innerText = playlist[index].title;
-        }
+        function loadSong(index) { if(playlist.length) { audioPlayer.src = playlist[index].file; titleLabel.innerText = playlist[index].title; } }
         function togglePlay() {
-            if (playlist.length === 0) return alert("Sube canciones");
-            if (!audioPlayer.src) loadSong(0);
-            if (isPlaying) { audioPlayer.pause(); playBtn.innerText = "▶"; }
-            else { audioPlayer.play(); playBtn.innerText = "⏸"; }
+            if(!playlist.length) return alert("¡Recuerda subir tus canciones!");
+            if(!audioPlayer.src) loadSong(0);
+            if(isPlaying) { audioPlayer.pause(); playBtn.innerText="▶"; } else { audioPlayer.play(); playBtn.innerText="⏸"; }
             isPlaying = !isPlaying;
         }
-        function nextSong() {
-            currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            loadSong(currentSongIndex); if(isPlaying) audioPlayer.play();
-        }
-        function prevSong() {
-            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-            loadSong(currentSongIndex); if(isPlaying) audioPlayer.play();
-        }
+        function nextSong() { currentSongIndex=(currentSongIndex+1)%playlist.length; loadSong(currentSongIndex); if(isPlaying) audioPlayer.play(); }
+        function prevSong() { currentSongIndex=(currentSongIndex-1+playlist.length)%playlist.length; loadSong(currentSongIndex); if(isPlaying) audioPlayer.play(); }
 
-        // ---------------------------------------------------------
-        // 4. MUNDO 3D (SOFI ALEATORIO)
-        // ---------------------------------------------------------
+        // --- 5. 3D SOFI (Nombre Escondido) ---
         let camera, scene, renderer, controls, wordGroup;
         const container = document.getElementById('scene-container');
         init(); animate();
-
         function init() {
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.0015);
-            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 2000);
-            camera.position.z = 500;
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 2000); camera.position.z = 500;
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); renderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(renderer.domElement);
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true; controls.enableZoom = false;
-
-            const starGeo = new THREE.BufferGeometry();
-            const starPos = [];
-            for(let i=0; i<3000; i++) starPos.push(THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000));
-            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
-            scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0x888888, size: 1.5})));
-
+            controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping=true; controls.enableZoom=false;
+            const sg = new THREE.BufferGeometry(); const sp = [];
+            for(let i=0; i<3000; i++) sp.push(THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000), THREE.MathUtils.randFloatSpread(2000));
+            sg.setAttribute('position', new THREE.Float32BufferAttribute(sp, 3));
+            scene.add(new THREE.Points(sg, new THREE.PointsMaterial({color:0x888888, size:1.5})));
             createSofi();
-            window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
+            window.addEventListener('resize', ()=>{ camera.aspect=container.clientWidth/container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); });
         }
-
         function createSofi() {
             wordGroup = new THREE.Group();
-            const matLine = new THREE.LineBasicMaterial({color: 0xd400ff, opacity: 0.8, transparent: true});
-            const matDot = new THREE.PointsMaterial({color: 0xffffff, size: 4});
-            function addLetter(pts, xOff) {
-                const geo = new THREE.BufferGeometry().setFromPoints(pts);
-                const l = new THREE.Line(geo, matLine); l.position.x = xOff;
-                const s = new THREE.Points(geo, matDot); s.position.x = xOff;
-                wordGroup.add(l, s);
+            const ml = new THREE.LineBasicMaterial({color:0xd400ff, opacity:0.8, transparent:true});
+            const md = new THREE.PointsMaterial({color:0xffffff, size:4});
+            function al(pts, x) {
+                const g = new THREE.BufferGeometry().setFromPoints(pts);
+                const l = new THREE.Line(g, ml); l.position.x=x;
+                const s = new THREE.Points(g, md); s.position.x=x;
+                wordGroup.add(l,s);
             }
             const h=40, w=30;
-            addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,0,0), new THREE.Vector3(w,0,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0)], -80);
-            addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(w,h,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0), new THREE.Vector3(0,h,0)], -30);
-            addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 20);
-            addLetter([new THREE.Vector3(0,0,0), new THREE.Vector3(w*0.7,0,0)], 20);
-            addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 70);
+            // S, O, F, I
+            al([new THREE.Vector3(w,h,0),new THREE.Vector3(0,h,0),new THREE.Vector3(0,0,0),new THREE.Vector3(w,0,0),new THREE.Vector3(w,-h,0),new THREE.Vector3(0,-h,0)], -80);
+            al([new THREE.Vector3(0,h,0),new THREE.Vector3(w,h,0),new THREE.Vector3(w,-h,0),new THREE.Vector3(0,-h,0),new THREE.Vector3(0,h,0)], -30);
+            al([new THREE.Vector3(w,h,0),new THREE.Vector3(0,h,0),new THREE.Vector3(0,-h,0)], 20); al([new THREE.Vector3(0,0,0),new THREE.Vector3(w*0.7,0,0)], 20);
+            al([new THREE.Vector3(0,h,0),new THREE.Vector3(0,-h,0)], 70);
             
+            // Rotación Aleatoria
             wordGroup.rotation.set(Math.random()*6, Math.random()*6, Math.random()*6);
             wordGroup.position.set(Math.random()*400-200, Math.random()*400-200, Math.random()*400-200);
             scene.add(wordGroup);
