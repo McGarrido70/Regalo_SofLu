@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Ti</title>
+    <style>
+        body { margin: 0; overflow-x: hidden; background: #000; color: white; font-family: 'Arial', sans-serif; }
+        canvas { display: block; position: fixed; top: 0; left: 0; z-index: -1; }
+        
+        /* La sección de bienvenida con su nombre */
+        .intro {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            text-shadow: 0 0 10px #fff, 0 0 20px #ff00de;
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        /* La flechita para bajar */
+        .scroll-down { margin-top: 20px; font-size: 2rem; animation: bounce 2s infinite; }
+
+        /* La sección de cartas/mensajes */
+        .content {
+            background: linear-gradient(to bottom, transparent, #1a0b2e);
+            min-height: 100vh;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            margin: 20px;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Animaciones */
+        @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0);} 40% {transform: translateY(-10px);} 60% {transform: translateY(-5px);} }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+
+    <div class="intro">
+        <h1>Sofi</h1>
+        <p>Arrastra el mouse o mueve el dedo para mover las estrellas</p>
+        <div class="scroll-down">⬇</div>
+    </div>
+
+    <div class="content">
+        <div class="card">
+            <h2>Primer Mensaje</h2>
+            <p>Aquí puedes escribir lo primero que quieres decirle. Eres mi universo...</p>
+        </div>
+        
+        <div class="card">
+            <h2>Nuestros recuerdos</h2>
+            <p>Puedes copiar y pegar este bloque "div class=card" para añadir más mensajes.</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de las estrellas
+        const canvas = document.getElementById("starfield");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let stars = [];
+        const numStars = 800; // Cantidad de estrellas
+        let centerX = canvas.width / 2;
+        let centerY = canvas.height / 2;
+
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                z: Math.random() * canvas.width // Profundidad
+            });
+        }
+
+        function animate() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            stars.forEach(star => {
+                let x = (star.x - centerX) * (canvas.width / star.z);
+                let y = (star.y - centerY) * (canvas.width / star.z);
+                let size = 1.5 * (canvas.width / star.z); // Tamaño según profundidad
+
+                // Dibujar estrella
+                ctx.beginPath();
+                ctx.fillStyle = "white";
+                ctx.arc(centerX + x, centerY + y, size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Mover estrella (Efecto viaje espacial)
+                star.z -= 2; 
+                if (star.z <= 0) {
+                    star.z = canvas.width;
+                    star.x = Math.random() * canvas.width;
+                    star.y = Math.random() * canvas.height;
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        // Mover el centro según el mouse
+        window.addEventListener("mousemove", (e) => {
+            centerX = e.clientX;
+            centerY = e.clientY;
+        });
+
+        // Ajustar si cambia tamaño de pantalla
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
