@@ -62,7 +62,7 @@
         .tarot-name { font-size: 1.2rem; color: #d400ff; font-weight: bold; margin-bottom: 5px; }
         .tarot-meaning { font-size: 0.85rem; color: #ccc; line-height: 1.3; }
 
-        /* --- ZONA ARCADE (AL FINAL) --- */
+        /* --- ZONA ARCADE --- */
         .arcade-section { width: 95%; max-width: 600px; margin: 0 auto 150px auto; background: #111; border: 4px solid #d400ff; border-radius: 10px; position: relative; overflow: hidden; height: 350px; box-shadow: 0 0 20px rgba(212, 0, 255, 0.3); touch-action: none; }
         #gameCanvas { width: 100%; height: 100%; display: block; background: #222; }
         .game-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; pointer-events: none; }
@@ -146,7 +146,7 @@
         <canvas id="gameCanvas"></canvas>
         <div id="gameOverlay" class="game-overlay">
             <div class="game-title" id="gameTitle">¡Consola Musical!</div>
-            <div class="game-msg">Dale play a la música y baja aquí para jugar</div>
+            <div class="game-msg">Dale play y toca aquí para jugar</div>
         </div>
     </div>
 
@@ -184,26 +184,37 @@
         // --- 2. START & AUDIO ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // ASSETS JUEGO
+        // --- CARGAR ASSETS (IMÁGENES INDIVIDUALES) ---
         const gameAssets = {
             taxi: new Image(),
             carEnemy: new Image(),
-            flores: new Image(),
             basket: new Image(),
             stone: new Image(),
-            chico: new Image(),
             corazon: new Image(),
-            roto: new Image()
+            roto: new Image(),
+            chicoFrames: [], // Array para animación guitarrista
+            flowerTypes: []  // Array para tipos de flores
         };
-        // NOMBRES EXACTOS PARA GITHUB
+
+        // Asignar fuentes (Nombres exactos)
         gameAssets.taxi.src = 'taxi.png';
-        gameAssets.carEnemy.src = 'cocheobstaculo.png'; // Coche malo
-        gameAssets.flores.src = '7tiposdeflores.png';   // Sprite de flores
+        gameAssets.carEnemy.src = 'cocheobstaculo.png';
         gameAssets.basket.src = 'cesta.png';
         gameAssets.stone.src = 'piedra.png';
-        gameAssets.chico.src = '6framesguitarrista.png'; // Sprite chico
         gameAssets.corazon.src = 'corazonrojo.png';
         gameAssets.roto.src = 'corazonroto.png';
+
+        // Cargar los 6 frames del chico (1frame.png, 2frame.png...)
+        const chicoFiles = ['1frame.png', '2frame.png', '3frame.png', '4frame.png', '5frame.png', '6frames.png'];
+        chicoFiles.forEach(file => {
+            let img = new Image(); img.src = file; gameAssets.chicoFrames.push(img);
+        });
+
+        // Cargar los tipos de flores
+        const flowerFiles = ['ortalisa.png', 'hortensia.png', 'orquidea.png', 'girasol.png', 'rosa.png', 'tulipan.png'];
+        flowerFiles.forEach(file => {
+            let img = new Image(); img.src = file; gameAssets.flowerTypes.push(img);
+        });
 
         function startExperience() {
             if(audioCtx.state==='suspended') audioCtx.resume();
@@ -261,7 +272,7 @@
         function initTaxi() { carX = canvas.width/2; obstacles = []; loopTaxi(); }
         function loopTaxi() {
             if(!gameActive) return;
-            // Fondo asfalto
+            // Fondo
             ctx.fillStyle = "#333"; ctx.fillRect(0,0,canvas.width,canvas.height); 
             ctx.strokeStyle = "#fff"; ctx.setLineDash([20, 20]); ctx.beginPath(); ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height); ctx.stroke();
 
@@ -287,7 +298,7 @@
         function initFlores() { basketX = canvas.width/2; fallingObjects = []; loopFlores(); }
         function loopFlores() {
             if(!gameActive) return;
-            ctx.fillStyle = "#2a5"; ctx.fillRect(0,0,canvas.width,canvas.height); // Pasto
+            ctx.fillStyle = "#2a5"; ctx.fillRect(0,0,canvas.width,canvas.height); 
             
             if(inputX < 0 && basketX > 30) basketX -= 6; if(inputX > 0 && basketX < canvas.width - 30) basketX += 6;
             
@@ -295,18 +306,19 @@
             else { ctx.fillStyle="brown"; ctx.fillRect(basketX-30, canvas.height-40, 60, 30); }
 
             if(Math.random() < 0.03) {
-                let isStone = Math.random() > 0.8; // 20% piedras
-                let fIndex = Math.floor(Math.random()*7); // 7 tipos de flores
+                let isStone = Math.random() > 0.8; 
+                // Elegir flor aleatoria del array
+                let fIndex = Math.floor(Math.random() * gameAssets.flowerTypes.length);
                 fallingObjects.push({x: Math.random()*canvas.width, y: -30, type: isStone ? 'stone' : 'flower', id: fIndex});
             }
 
             for(let i=0; i<fallingObjects.length; i++) {
                 let o = fallingObjects[i]; o.y += 3;
                 if(o.type === 'flower') {
-                    if(gameAssets.flores.complete) {
-                        let fw = gameAssets.flores.width / 7; // Dividir sprite
-                        ctx.drawImage(gameAssets.flores, o.id*fw, 0, fw, gameAssets.flores.height, o.x-15, o.y-15, 30, 30);
-                    } else ctx.fillText("🌸", o.x, o.y);
+                    // Dibujar la flor específica del array
+                    let img = gameAssets.flowerTypes[o.id];
+                    if(img && img.complete) ctx.drawImage(img, o.x-15, o.y-15, 30, 30);
+                    else ctx.fillText("🌸", o.x, o.y);
                 } else {
                     if(gameAssets.stone.complete) ctx.drawImage(gameAssets.stone, o.x-15, o.y-15, 30, 30);
                     else ctx.fillText("🪨", o.x, o.y);
@@ -321,7 +333,7 @@
             gameId = requestAnimationFrame(loopFlores);
         }
 
-        // --- JUEGO 3: NEORONEO ---
+        // --- JUEGO 3: NEORONEO (Animación con Frames) ---
         let neoBubbles;
         function initNeo() { neoBubbles = []; loopNeo(); }
         function loopNeo() {
@@ -329,14 +341,15 @@
             ctx.fillStyle = "#102"; ctx.fillRect(0,0,canvas.width,canvas.height);
             frameCount++;
             
-            // Chico animado
-            if(gameAssets.chico.complete) {
-                // Suponiendo que es una tira de 6 frames o 3x2. Probaremos tira horizontal primero
-                // Si es 2 filas de 3:
-                let frame = Math.floor(frameCount/10) % 6;
-                let col = frame % 3; let row = Math.floor(frame / 3);
-                let sw = gameAssets.chico.width / 3; let sh = gameAssets.chico.height / 2;
-                ctx.drawImage(gameAssets.chico, col*sw, row*sh, sw, sh, canvas.width/2 - 60, canvas.height - 130, 120, 120);
+            // Chico animado (Ciclo de frames 1-6)
+            if(gameAssets.chicoFrames.length > 0) {
+                // Cambiar frame cada 10 ticks del juego
+                let frameIndex = Math.floor(frameCount / 10) % gameAssets.chicoFrames.length;
+                let currentImg = gameAssets.chicoFrames[frameIndex];
+                
+                if(currentImg && currentImg.complete) {
+                    ctx.drawImage(currentImg, canvas.width/2 - 60, canvas.height - 130, 120, 120);
+                }
             } else { ctx.fillText("🎸", canvas.width/2, canvas.height-50); }
 
             if(Math.random() < 0.04) {
@@ -433,10 +446,10 @@
         // --- 6. GA-TAROT ---
         const deck = [
             { image: "Michichay.jpeg", name: "El Protagonista", meaning: "Como Michichay, hoy eres el centro de la historia. ¡Brilla con tu luz propia!" },
-            { image: "Fotooo.jpeg", name: "La Musa (Tú)", meaning: "La carta más bella. Hoy irradias arte e inspiración. El universo te sonríe.❤️" },
-            { image: "Gato Drogo.jpeg", name: "El Gato Drogo", meaning: "Estás un poco en las nubes hoy, y está bien. Es un día para soñar despierta, reírte de la nada y lokuraaa hfweebew." },
-            { image: "Gato Cachondo.jpeg", name: "Pura Pasión", meaning: "Hay fuego en el aire hoy por eso estas encerrado por cachondo. Te sientes magnética e irresistible." },
-            { image: "Trio bandido.jpeg", name: "Los Cómplices", meaning: "La banda de extorsionadores más buscada de todo Breña. Un día perfecto para planear algo divertido." },
+            { image: "Fotooo.jpeg", name: "La Musa (Tú)", meaning: "La carta más bella. Hoy irradias arte e inspiración. El universo esta enamorado de ti.💕" },
+            { image: "Gato Drogo.jpeg", name: "El Gato Drogo", meaning: "Estás en las nubes, soñando despierta. Déjate llevar por la imaginación." },
+            { image: "Gato Cachondo.jpeg", name: "Pura Pasión", meaning: "Fuego en el aire. Te sientes magnética. Cuidado con lo que deseas." },
+            { image: "Trio bandido.jpeg", name: "Los Cómplices", meaning: "Amistad y travesuras. Ríete de todo con los tuyos." },
             { image: "Gato pinguiño.jpeg", name: "El Elegante", meaning: "Aunque a veces te sientas rara, tienes un estilo único. Acepta tu rareza hoy, es tu superpoder BROER MI KUATRII." },
             { image: "Gato berrako.jpeg", name: "La Jefa", meaning: "Hoy mandas tú. Nadie te puede decir qué hacer. Berrakeria y flow por todos lados DIAVLOOO." }
         ];
