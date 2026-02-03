@@ -14,7 +14,6 @@
         /* --- ESTILOS GENERALES --- */
         body { margin: 0; background-color: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; user-select: none; -webkit-tap-highlight-color: transparent; }
         
-        /* PANTALLA DE INICIO */
         #start-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 5000; display: flex; flex-direction: column;
@@ -25,108 +24,88 @@
             color: #d400ff; border: 2px solid #d400ff; border-radius: 50px;
             cursor: pointer; transition: 0.3s; box-shadow: 0 0 20px rgba(212, 0, 255, 0.4);
         }
-        #start-btn:hover { background: #d400ff; color: white; transform: scale(1.1); }
 
         /* CONTENEDOR 3D */
         #scene-container {
-            width: 85%; height: 450px; margin: 40px auto; position: relative;
+            width: 95%; height: 350px; margin: 20px auto; position: relative;
             border: 1px solid #333; border-radius: 15px; overflow: hidden;
             box-shadow: 0 0 30px rgba(212, 0, 255, 0.15); cursor: grab;
         }
-        #scene-container:active { cursor: grabbing; }
-        .instruction { text-align: center; color: #888; font-size: 0.9rem; margin-top: -30px; margin-bottom: 40px; }
+        .instruction { text-align: center; color: #888; font-size: 0.8rem; margin-top: -15px; margin-bottom: 30px; }
 
-        /* SECCIONES TEXTO */
-        .bottom-section { display: flex; justify-content: space-between; width: 85%; margin: 0 auto 50px auto; gap: 20px; flex-wrap: wrap;}
-        .card { background: #0f0f0f; border: 1px solid #222; padding: 25px; width: 45%; border-radius: 15px; min-width: 300px; flex-grow: 1; }
-        h2 { color: #d400ff; margin-top: 0; font-size: 1.4rem; }
-        p { line-height: 1.6; color: #ccc; font-size: 0.95rem; }
+        /* --- ZONA ARCADE (NUEVO) --- */
+        .arcade-section {
+            width: 95%; max-width: 600px; margin: 0 auto 50px auto;
+            background: #111; border: 4px solid #d400ff; border-radius: 10px;
+            position: relative; overflow: hidden; height: 350px;
+            box-shadow: 0 0 20px rgba(212, 0, 255, 0.3);
+            touch-action: none; /* Importante para jugar en móvil */
+        }
+        #gameCanvas { width: 100%; height: 100%; display: block; background: #222; }
+        .game-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            pointer-events: none; /* Para dejar pasar clicks si está oculto */
+        }
+        .game-overlay.hidden { display: none; pointer-events: none; }
+        .game-title { font-size: 2rem; color: #ffd700; text-shadow: 2px 2px #d400ff; margin-bottom: 10px; font-weight: bold; }
+        .game-msg { font-size: 1rem; color: white; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        /* CALENDARIO */
-        .calendar-section { width: 85%; margin: 0 auto 100px auto; background: #0f0f0f; border: 1px solid #222; border-radius: 15px; padding: 20px; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-nav { background: #222; color: #d400ff; border: 1px solid #d400ff; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
-        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-cell { background: #1a1a1a; padding: 10px; border-radius: 5px; cursor: pointer; min-height: 40px; transition: 0.2s;}
-        .day-cell:hover { background: #2a2a2a; border-color:#555; }
-        .day-cell.today { border: 1px solid #d400ff; color: #d400ff; font-weight: bold;}
-        .has-note::after { content: '★'; display: block; color: #ffd700; font-size: 0.8rem; position: absolute; top: 2px; right: 2px;}
+        /* SECCIONES Y TARJETAS */
+        .bottom-section { display: flex; justify-content: space-between; width: 95%; margin: 0 auto 50px auto; gap: 15px; flex-wrap: wrap;}
+        .card { background: #0f0f0f; border: 1px solid #222; padding: 20px; width: 45%; border-radius: 15px; min-width: 300px; flex-grow: 1; }
+        h2 { color: #d400ff; margin-top: 0; font-size: 1.2rem; }
+        p { line-height: 1.5; color: #ccc; font-size: 0.9rem; }
 
         /* UKELELE */
         .uke-section {
-            width: 90%; max-width: 550px; margin: 0 auto 100px auto;
-            text-align: center; background: #2a1b0e; padding: 20px;
-            border-radius: 20px; border: 4px solid #4a3018;
-            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
-            touch-action: none;
+            width: 95%; max-width: 550px; margin: 0 auto 80px auto;
+            text-align: center; background: #2a1b0e; padding: 15px;
+            border-radius: 20px; border: 3px solid #4a3018;
+            touch-action: none; 
         }
-        .chord-selectors { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .chord-selectors { display: flex; justify-content: center; gap: 5px; margin-bottom: 15px; flex-wrap: wrap; }
         .chord-btn {
             background: #4a3018; color: #dcb; border: 1px solid #6b4c2e;
-            padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: 0.2s; min-width: 40px;
+            padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
         }
-        .chord-btn.active { background: #d400ff; color: white; border-color: #fff; transform: scale(1.1); }
-        
+        .chord-btn.active { background: #d400ff; color: white; border-color: #fff; }
         .fretboard {
-            position: relative; height: 180px; 
+            position: relative; height: 160px; 
             background: linear-gradient(to bottom, #2c1e12, #1a0b05);
-            border: 4px solid #4a3018; border-radius: 8px;
+            border: 2px solid #4a3018; border-radius: 8px;
             display: flex; flex-direction: column; justify-content: space-evenly;
-            overflow: hidden; cursor: pointer;
+            overflow: hidden; 
         }
         .fret-line { position: absolute; top:0; height:100%; width:2px; background:#553a22; }
-        .string { position: relative; width: 100%; height: 45px; display: flex; align-items: center; z-index: 10; }
-        .string::before { content:''; position: absolute; left:0; right:0; height:2px; background: rgba(255,255,255,0.5); box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .string { position: relative; width: 100%; height: 40px; display: flex; align-items: center; z-index: 10; }
+        .string::before { content:''; position: absolute; left:0; right:0; height:2px; background: rgba(255,255,255,0.5); }
         .string.vibrating::before { background: #d400ff; height: 3px; box-shadow: 0 0 10px #d400ff; }
-        .finger-dot { position: absolute; width: 16px; height: 16px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; z-index: 20; }
+        .finger-dot { position: absolute; width: 14px; height: 14px; background: #d400ff; border-radius: 50%; display: none; transform: translate(-50%, -50%); top: 50%; box-shadow: 0 0 5px #fff; z-index: 20; }
 
-        /* GA-TAROT */
-        .tarot-section {
-            width: 85%; margin: 0 auto 150px auto;
-            text-align: center; background: linear-gradient(135deg, #1a0b2e 0%, #000 100%);
-            padding: 40px 20px; border-radius: 20px; border: 1px solid #4a3068;
-            box-shadow: 0 0 40px rgba(74, 48, 104, 0.4);
-        }
-        .tarot-container {
-            perspective: 1000px;
-            width: 250px; height: 380px; margin: 30px auto; cursor: pointer;
-        }
-        .tarot-card {
-            width: 100%; height: 100%; position: relative;
-            transform-style: preserve-3d; transition: transform 0.8s;
-            border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
-        }
+        /* CALENDARIO & TAROT */
+        .calendar-section, .tarot-section { width: 95%; margin: 0 auto 80px auto; background: #0f0f0f; border: 1px solid #222; border-radius: 15px; padding: 20px; text-align: center;}
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .day-cell { background: #1a1a1a; padding: 10px; border-radius: 5px; cursor: pointer; min-height: 40px; position: relative;}
+        .day-cell.today { border: 1px solid #d400ff; color: #d400ff; font-weight: bold;}
+        .has-note::after { content: '★'; position: absolute; top: 2px; right: 2px; color: #ffd700; font-size: 0.7rem; }
+
+        /* TAROT CARDS */
+        .tarot-container { perspective: 1000px; width: 220px; height: 340px; margin: 20px auto; cursor: pointer; }
+        .tarot-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.8s; border-radius: 15px; }
         .tarot-card.flipped { transform: rotateY(180deg); }
-        
-        .card-face {
-            position: absolute; width: 100%; height: 100%;
-            backface-visibility: hidden; border-radius: 15px;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column; overflow: hidden;
-        }
-        .card-back {
-            background: linear-gradient(45deg, #111, #222);
-            border: 2px solid #d400ff;
-            background-image: repeating-linear-gradient(45deg, #1a1a1a 25%, transparent 25%, transparent 75%, #1a1a1a 75%, #1a1a1a), repeating-linear-gradient(45deg, #1a1a1a 25%, #0f0f0f 25%, #0f0f0f 75%, #1a1a1a 75%, #1a1a1a);
-            background-position: 0 0, 10px 10px; background-size: 20px 20px;
-        }
-        .card-back::after { content: '🐾'; font-size: 4rem; color: #d400ff; text-shadow: 0 0 20px #d400ff; animation: pulse 2s infinite; }
-        
-        .card-front {
-            background: #0f0f0f; border: 2px solid #d400ff;
-            transform: rotateY(180deg); padding: 15px; box-sizing: border-box;
-        }
-        
-        .tarot-image-container { 
-            width: 180px; height: 180px; margin-bottom: 15px; 
-            border-radius: 10px; overflow: hidden; 
-            border: 2px solid #d400ff; box-shadow: 0 0 15px rgba(212,0,255,0.4); 
-        }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; display: flex; justify-content: center; align-items: center; flex-direction: column; overflow: hidden; }
+        .card-back { background: linear-gradient(45deg, #111, #222); border: 2px solid #d400ff; }
+        .card-back::after { content: '🐾'; font-size: 4rem; color: #d400ff; animation: pulse 2s infinite; }
+        .card-front { background: #0f0f0f; border: 2px solid #d400ff; transform: rotateY(180deg); padding: 10px; }
+        .tarot-image-container { width: 160px; height: 160px; margin-bottom: 10px; border-radius: 10px; overflow: hidden; border: 2px solid #d400ff; }
         .tarot-image-actual { width: 100%; height: 100%; object-fit: cover; }
+        .tarot-name { font-size: 1.2rem; color: #d400ff; font-weight: bold; margin-bottom: 5px; }
+        .tarot-meaning { font-size: 0.85rem; color: #ccc; line-height: 1.3; }
 
-        .tarot-name { font-size: 1.4rem; color: #d400ff; font-weight: bold; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .tarot-meaning { font-size: 0.9rem; color: #ccc; line-height: 1.4; padding: 0 5px; }
-        
         @keyframes pulse { 0% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0.5; transform: scale(1); } }
 
         /* MODAL Y PLAYER */
@@ -134,15 +113,9 @@
         .modal-content { background:#151515; padding:30px; border-radius:10px; width:300px; border:1px solid #d400ff; text-align:center; }
         textarea { width:100%; height:100px; background:#222; color:white; border:1px solid #444; margin:15px 0; padding:10px; }
         
-        #music-player { position: fixed; bottom: 20px; left: 20px; background: rgba(15, 15, 15, 0.95); border: 1px solid #d400ff; padding: 10px 20px; border-radius: 50px; z-index: 1000; display: flex; align-items: center; gap: 15px; }
-        .controls button { background: none; border: none; color: white; cursor: pointer; font-size: 1.2rem; }
-        .song-info { font-size: 0.85rem; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d400ff; }
-
-        @media (max-width: 768px) {
-            .bottom-section { flex-direction: column; }
-            .card, .calendar-section, .uke-section, .tarot-section { width: 95%; }
-            #music-player { left: 2.5%; width: 95%; justify-content: space-between; }
-        }
+        #music-player { position: fixed; bottom: 20px; left: 5%; width: 90%; background: rgba(15, 15, 15, 0.95); border: 1px solid #d400ff; padding: 10px 20px; border-radius: 50px; z-index: 1000; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .controls button { background: none; border: none; color: white; cursor: pointer; font-size: 1.5rem; padding: 0 10px;}
+        .song-info { font-size: 0.9rem; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #d400ff; }
     </style>
 </head>
 <body>
@@ -153,17 +126,29 @@
     </div>
 
     <div id="scene-container"></div>
-    <p class="instruction">✨ Gira y busca tu nombre escondido (¡Puedes hacer Zoom!) ✨</p>
+    <p class="instruction">✨ Gira y busca tu nombre escondido ✨</p>
+
+    <div class="arcade-section" id="arcadeArea">
+        <canvas id="gameCanvas"></canvas>
+        <div id="gameOverlay" class="game-overlay">
+            <div class="game-title" id="gameTitle">Ready?</div>
+            <div class="game-msg">Toca para jugar</div>
+        </div>
+    </div>
 
     <div class="bottom-section">
         <div class="card">
-            <h2>Bienvenida</h2>
-            <p>Este es tu rincón especial. Arriba tienes un universo realista para explorar.</p>
-            <p>Abajo, música, un ukelele para practicar y el Gran Oráculo Ga-tarot.</p>
+            <h2>¡Arcade Musical!</h2>
+            <p>Arriba tienes un juego diferente para cada canción:</p>
+            <ul style="padding-left:20px; color:#aaa; font-size:0.85rem;">
+                <li><b>Taxi:</b> Esquiva el tráfico 🚕</li>
+                <li><b>Flores:</b> Atrapa las flores 🌸</li>
+                <li><b>Otras:</b> Relájate con el ritmo ❤️</li>
+            </ul>
         </div>
         <div class="card">
-            <h2>Calendario en la Nube</h2>
-            <p>Haz clic en cualquier día. Lo que escribas se guarda para los dos.</p>
+            <h2>Calendario</h2>
+            <p>Haz clic en un día para dejar una nota.</p>
         </div>
     </div>
 
@@ -193,9 +178,7 @@
             <button class="chord-btn" onclick="setChord('Bb')">Bb</button>
         </div>
         <div class="fretboard" id="fretboard">
-            <div class="fret-line" style="left: 25%"></div>
-            <div class="fret-line" style="left: 50%"></div>
-            <div class="fret-line" style="left: 75%"></div>
+            <div class="fret-line" style="left: 25%"></div> <div class="fret-line" style="left: 50%"></div> <div class="fret-line" style="left: 75%"></div>
             <div class="string" data-s="3" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
             <div class="string" data-s="2" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
             <div class="string" data-s="1" data-f="0"> <div class="finger-dot" style="left:12.5%" data-show="1"></div> <div class="finger-dot" style="left:37.5%" data-show="2"></div> <div class="finger-dot" style="left:62.5%" data-show="3"></div> <div class="finger-dot" style="left:87.5%" data-show="4"></div> </div>
@@ -205,15 +188,11 @@
 
     <div class="tarot-section">
         <h2>🔮 Ga-Tarot del Día</h2>
-        <p style="font-size: 0.9rem; color:#aaa;">Toca la carta para ver qué dicen los michis hoy</p>
-        
         <div class="tarot-container" onclick="flipCard()">
             <div class="tarot-card" id="dailyCard">
                 <div class="card-face card-back"></div>
                 <div class="card-face card-front">
-                    <div class="tarot-image-container">
-                        <img id="tarotImageSrc" class="tarot-image-actual" src="" alt="Michi Tarot">
-                    </div>
+                    <div class="tarot-image-container"><img id="tarotImageSrc" class="tarot-image-actual" src=""></div>
                     <div class="tarot-name" id="tarotName"></div>
                     <div class="tarot-meaning" id="tarotMeaning"></div>
                 </div>
@@ -226,10 +205,7 @@
         <div class="modal-content">
             <h3 id="modalDateTitle">Fecha</h3>
             <textarea id="noteText" placeholder="Escribe aquí..."></textarea>
-            <div>
-                <button class="btn-nav" onclick="closeModal()">Cerrar</button>
-                <button class="btn-nav" style="background:#d400ff; color:white;" onclick="saveNote()">Guardar ☁️</button>
-            </div>
+            <div><button class="btn-nav" onclick="closeModal()">Cerrar</button><button class="btn-nav" style="background:#d400ff; color:white;" onclick="saveNote()">Guardar ☁️</button></div>
         </div>
     </div>
 
@@ -244,7 +220,7 @@
     </div>
 
     <script>
-        // --- 1. FIREBASE SETUP ---
+        // --- 1. FIREBASE (¡PON TUS DATOS AQUÍ!) ---
         const firebaseConfig = {
             apiKey: "AIzaSyCvzZNhb97ABzhKalhPppHwcfUMG5lGVyg",
             authDomain: "regalo-sofi-31bd7.firebaseapp.com",
@@ -254,94 +230,222 @@
             messagingSenderId: "896831826087",
             appId: "1:896831826087:web:d9a067f38828a5c1eb1382"
         };
-        try { firebase.initializeApp(firebaseConfig); var database = firebase.database(); } 
-        catch (e) { console.error("Error Firebase", e); }
+        try { firebase.initializeApp(firebaseConfig); var database = firebase.database(); } catch(e){}
 
-        // --- 2. AUDIO INIT ---
+        // --- 2. START & AUDIO ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function startExperience() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            document.getElementById('start-screen').style.opacity = '0';
-            setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; }, 1000);
+            if(audioCtx.state==='suspended') audioCtx.resume();
+            document.getElementById('start-screen').style.opacity='0';
+            setTimeout(()=>{document.getElementById('start-screen').style.display='none';},1000);
             init3D();
         }
 
-        // --- 3. UKELELE LÓGICA ---
-        const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
-        const chords = {
-            'C':  [3, 0, 0, 0], 'G':  [2, 3, 2, 0], 'F':  [0, 1, 0, 2], 'Am': [0, 0, 0, 2],
-            'Dm': [0, 1, 2, 2], 'Em': [2, 3, 4, 0], 'A':  [0, 0, 1, 2], 'D':  [0, 2, 2, 2],
-            'E7': [2, 0, 2, 1], 'G7': [2, 1, 2, 0], 'C7': [1, 0, 0, 0], 'Bb': [1, 1, 2, 3]
-        };
-        let currentShape = chords['C'];
+        // --- 3. ARCADE GAME ENGINE (NUEVO) ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const overlay = document.getElementById('gameOverlay');
+        const gameTitle = document.getElementById('gameTitle');
+        let gameId, score=0, gameActive=false, currentGameType="";
+        
+        // Ajustar canvas
+        function resizeGame() { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
+        window.addEventListener('resize', resizeGame); resizeGame();
 
+        // Control Inputs
+        let inputX = 0; // -1 (izq), 0 (centro), 1 (der)
+        canvas.addEventListener('mousedown', (e) => {
+            if(!gameActive) { startGame(); return; }
+            if(e.offsetX < canvas.width/2) inputX = -1; else inputX = 1;
+        });
+        canvas.addEventListener('mouseup', () => inputX = 0);
+        canvas.addEventListener('touchstart', (e) => {
+            if(!gameActive) { startGame(); return; }
+            e.preventDefault();
+            const touchX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+            if(touchX < canvas.width/2) inputX = -1; else inputX = 1;
+        }, {passive:false});
+        canvas.addEventListener('touchend', () => inputX = 0);
+
+        function loadGameForSong(songName) {
+            gameActive = false;
+            cancelAnimationFrame(gameId);
+            overlay.classList.remove('hidden');
+            
+            if(songName.includes("Taxi")) {
+                currentGameType = "taxi";
+                gameTitle.innerText = "🚕 Crazy Taxi";
+            } else if(songName.includes("Flores")) {
+                currentGameType = "flores";
+                gameTitle.innerText = "🌸 Jardín de Sofi";
+            } else {
+                currentGameType = "visual";
+                gameTitle.innerText = "❤️ Ritmo Relax";
+            }
+        }
+
+        function startGame() {
+            gameActive = true;
+            overlay.classList.add('hidden');
+            score = 0;
+            if(currentGameType === "taxi") initTaxi();
+            else if(currentGameType === "flores") initFlores();
+            else initVisual();
+        }
+
+        // --- JUEGO 1: TAXI (Carreras) ---
+        let carX, obstacles;
+        function initTaxi() {
+            carX = canvas.width/2; obstacles = [];
+            loopTaxi();
+        }
+        function loopTaxi() {
+            if(!gameActive) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            
+            // Player Car
+            if(inputX < 0 && carX > 40) carX -= 5;
+            if(inputX > 0 && carX < canvas.width - 40) carX += 5;
+            
+            ctx.font = "40px Arial"; ctx.textAlign = "center";
+            ctx.fillText("🚕", carX, canvas.height - 50);
+
+            // Obstacles
+            if(Math.random() < 0.02) obstacles.push({x: Math.random() * (canvas.width-40) + 20, y: -50});
+            
+            for(let i=0; i<obstacles.length; i++) {
+                let o = obstacles[i];
+                o.y += 5; // Velocidad
+                ctx.fillText("🚧", o.x, o.y);
+                
+                // Colisión simple
+                if(Math.abs(o.x - carX) < 30 && Math.abs(o.y - (canvas.height-50)) < 30) {
+                    gameOver(); return;
+                }
+            }
+            // Score
+            score++;
+            ctx.fillStyle="white"; ctx.font="20px Arial"; ctx.fillText("Score: "+score, 50, 30);
+            gameId = requestAnimationFrame(loopTaxi);
+        }
+
+        // --- JUEGO 2: FLORES (Atrapar) ---
+        let basketX, flowers;
+        function initFlores() {
+            basketX = canvas.width/2; flowers = [];
+            loopFlores();
+        }
+        function loopFlores() {
+            if(!gameActive) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            
+            if(inputX < 0 && basketX > 30) basketX -= 5;
+            if(inputX > 0 && basketX < canvas.width - 30) basketX += 5;
+            ctx.fillText("🧺", basketX, canvas.height - 40);
+
+            if(Math.random() < 0.03) {
+                const types = ["🌸", "🌻", "🌹", "🪨"]; // Flor, Flor, Flor, Piedra
+                flowers.push({x: Math.random() * canvas.width, y: -30, type: types[Math.floor(Math.random()*4)]});
+            }
+
+            for(let i=0; i<flowers.length; i++) {
+                let f = flowers[i];
+                f.y += 3; 
+                ctx.fillText(f.type, f.x, f.y);
+                
+                // Catch
+                if(Math.abs(f.x - basketX) < 30 && Math.abs(f.y - (canvas.height-40)) < 30) {
+                    if(f.type === "🪨") { gameOver(); return; } // Piedra mata
+                    score += 10;
+                    flowers.splice(i, 1); i--;
+                }
+            }
+            ctx.fillStyle="white"; ctx.font="20px Arial"; ctx.fillText("Flores: "+score, 60, 30);
+            gameId = requestAnimationFrame(loopFlores);
+        }
+
+        // --- JUEGO 3: VISUALIZER (Default) ---
+        let particles = [];
+        function initVisual() {
+            particles = [];
+            loopVisual();
+        }
+        function loopVisual() {
+            if(!gameActive) return;
+            // Efecto rastro
+            ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if(Math.random() < 0.1) {
+                particles.push({x: Math.random()*canvas.width, y: canvas.height, s: Math.random()*2+1, hue: Math.random()*360});
+            }
+            
+            for(let i=0; i<particles.length; i++) {
+                let p = particles[i];
+                p.y -= p.s;
+                ctx.fillStyle = `hsl(${p.hue}, 100%, 50%)`;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.s*2, 0, Math.PI*2); ctx.fill();
+                if(p.y < 0) { particles.splice(i, 1); i--; }
+            }
+            // Corazón latiente
+            let scale = 1 + Math.sin(Date.now()/200)*0.2;
+            ctx.font = (50*scale)+"px Arial"; ctx.textAlign="center";
+            ctx.fillText("❤️", canvas.width/2, canvas.height/2);
+            
+            gameId = requestAnimationFrame(loopVisual);
+        }
+
+        function gameOver() {
+            gameActive = false;
+            gameTitle.innerText = "Game Over!";
+            overlay.classList.remove('hidden');
+        }
+
+
+        // --- 4. UKELELE LÓGICA ---
+        const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
+        const chords = { 'C':[3,0,0,0], 'G':[2,3,2,0], 'F':[0,1,0,2], 'Am':[0,0,0,2], 'Dm':[0,1,2,2], 'Em':[2,3,4,0], 'A':[0,0,1,2], 'D':[0,2,2,2], 'E7':[2,0,2,1], 'G7':[2,1,2,0], 'C7':[1,0,0,0], 'Bb':[1,1,2,3] };
+        let currentShape = chords['C'];
         function setChord(name) {
             currentShape = chords[name];
-            document.querySelectorAll('.chord-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            const strings = document.querySelectorAll('.string');
-            strings.forEach((str, i) => {
+            document.querySelectorAll('.chord-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active');
+            document.querySelectorAll('.string').forEach((str, i) => {
                 const logicIdx = 3 - i; const fret = currentShape[logicIdx];
-                str.querySelectorAll('.finger-dot').forEach(d => d.style.display = 'none');
-                str.setAttribute('data-f', fret);
-                if(fret > 0) {
-                    const dot = str.querySelector(`.finger-dot[data-show="${fret}"]`);
-                    if(dot) dot.style.display = 'block';
-                }
+                str.querySelectorAll('.finger-dot').forEach(d => d.style.display = 'none'); str.setAttribute('data-f', fret);
+                if(fret > 0) str.querySelector(`.finger-dot[data-show="${fret}"]`).style.display = 'block';
             });
         }
         setTimeout(() => setChord('C'), 500);
-
         function playString(idx) {
             const fret = currentShape[idx]; const freq = openFreqs[idx] * Math.pow(2, fret/12);
             const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.type = 'triangle'; osc.frequency.value = freq;
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            const now = audioCtx.currentTime;
-            gain.gain.setValueAtTime(0, now);
-            gain.gain.linearRampToValueAtTime(0.4, now + 0.02);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
-            osc.start(now); osc.stop(now + 1.5);
-            const visualIdx = 3 - idx; 
-            const strEl = document.querySelectorAll('.string')[visualIdx];
-            if(strEl) { strEl.classList.add('vibrating'); setTimeout(() => strEl.classList.remove('vibrating'), 200); }
+            osc.type = 'triangle'; osc.frequency.value = freq; osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime; gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.4, now+0.02); gain.gain.exponentialRampToValueAtTime(0.001, now+1.5);
+            osc.start(now); osc.stop(now+1.5);
+            const strEl = document.querySelectorAll('.string')[3-idx]; if(strEl) { strEl.classList.add('vibrating'); setTimeout(()=>strEl.classList.remove('vibrating'),200); }
         }
-
         const fretboard = document.getElementById('fretboard');
-        fretboard.addEventListener('mousemove', (e) => { if(e.buttons === 1) checkStrum(e); });
+        fretboard.addEventListener('mousemove', (e) => { if(e.buttons===1) checkStrum(e); });
         fretboard.addEventListener('touchmove', (e) => { e.preventDefault(); checkStrum(e.touches[0]); }, {passive:false});
+        function checkStrum(p) { const el = document.elementFromPoint(p.clientX, p.clientY); if(el && el.classList.contains('string') && !el.classList.contains('vibrating')) playString(parseInt(el.getAttribute('data-s'))); }
+        document.querySelectorAll('.string').forEach(s => s.addEventListener('mousedown', ()=>playString(parseInt(s.getAttribute('data-s')))));
 
-        function checkStrum(pointer) {
-            const el = document.elementFromPoint(pointer.clientX, pointer.clientY);
-            if(el && el.classList.contains('string') && !el.classList.contains('vibrating')) {
-                playString(parseInt(el.getAttribute('data-s')));
-            }
-        }
-        document.querySelectorAll('.string').forEach(s => {
-            s.addEventListener('mousedown', () => playString(parseInt(s.getAttribute('data-s'))));
-        });
-
-        // --- 4. CALENDARIO ---
+        // --- 5. CALENDARIO ---
         let currentDate = new Date();
-        const monthYearEl = document.getElementById('monthYear');
-        const calendarGrid = document.getElementById('calendarGrid');
-        const modal = document.getElementById('noteModal');
-        const noteText = document.getElementById('noteText');
+        const monthYearEl = document.getElementById('monthYear'); const calendarGrid = document.getElementById('calendarGrid');
+        const modal = document.getElementById('noteModal'); const noteText = document.getElementById('noteText');
         let selectedDateKey = null; let allNotes = {};
-        if(database) { database.ref('calendario_notas').on('value', (s) => { allNotes = s.val() || {}; renderCalendar(); }); }
-
+        if(database) database.ref('calendario_notas').on('value', (s) => { allNotes = s.val() || {}; renderCalendar(); });
         function renderCalendar() {
             const year = currentDate.getFullYear(); const month = currentDate.getMonth();
             monthYearEl.innerText = new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
             calendarGrid.innerHTML = '';
-            ['D','L','M','X','J','V','S'].forEach(d => { const el = document.createElement('div'); el.innerText = d; el.style.color='#777'; calendarGrid.appendChild(el); });
-            const firstDay = new Date(year, month, 1).getDay();
-            for(let i=0; i<firstDay; i++) calendarGrid.appendChild(document.createElement('div'));
-            const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date();
-            for(let i=1; i<=daysInMonth; i++) {
+            ['D','L','M','X','J','V','S'].forEach(d => { const el = document.createElement('div'); el.innerText=d; el.style.color='#777'; calendarGrid.appendChild(el); });
+            for(let i=0; i<new Date(year, month, 1).getDay(); i++) calendarGrid.appendChild(document.createElement('div'));
+            for(let i=1; i<=new Date(year, month+1, 0).getDate(); i++) {
                 const cell = document.createElement('div'); cell.className = 'day-cell'; cell.innerText = i;
                 const key = `${i}-${month}-${year}`;
-                if(i===today.getDate() && month===today.getMonth()) cell.classList.add('today');
+                if(i===new Date().getDate() && month===new Date().getMonth()) cell.classList.add('today');
                 if(allNotes[key]) cell.classList.add('has-note');
                 cell.onclick = () => { selectedDateKey = key; document.getElementById('modalDateTitle').innerText = key.replace(/-/g, '/'); noteText.value = allNotes[key] || ''; modal.style.display = 'flex'; };
                 calendarGrid.appendChild(cell);
@@ -349,148 +453,83 @@
         }
         function changeMonth(d) { currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
         function closeModal() { modal.style.display = 'none'; }
-        function saveNote() {
-            const val = noteText.value.trim();
-            if(val) database.ref('calendario_notas/'+selectedDateKey).set(val); else database.ref('calendario_notas/'+selectedDateKey).remove();
-            closeModal();
-        }
+        function saveNote() { const val = noteText.value.trim(); if(val) database.ref('calendario_notas/'+selectedDateKey).set(val); else database.ref('calendario_notas/'+selectedDateKey).remove(); closeModal(); }
         renderCalendar();
 
-        // --- 5. GA-TAROT (CON TUS FOTOS) ---
-        // Aquí están los nombres exactos que me diste
+        // --- 6. GA-TAROT ---
         const deck = [
-            { 
-                image: "Michichay.jpeg", // El Protagonista
-                name: "El Protagonista", 
-                meaning: "Como Michichay, hoy eres el centro de la historia. Todo gira a tu favor. ¡Brilla con tu luz propia!" 
-            },
-            { 
-                image: "Fotooo.jpeg", // ELLA - La Carta Más Poderosa
-                name: "La Musa (Tú)", 
-                meaning: "La carta más bella de la baraja. Hoy irradias arte, inspiración y poder. El universo está enamorado de ti." 
-            },
-            { 
-                image: "Gato Drogo.jpeg", // El Loco / High
-                name: "El Gato Drogo", 
-                meaning: "Estás un poco en las nubes hoy, y está bien. Es un día para soñar despierta, reírte de la nada y lokuraaa hfweebew." 
-            },
-            { 
-                image: "Gato Cachondo.jpeg", // La Pasión
-                name: "Pura Pasión", 
-                meaning: "Hay fuego en el aire hoy por eso estas encerrado por cachondo. Te sientes magnética e irresistible. Cuidado con lo que deseas, que se cumple." 
-            },
-            { 
-                image: "Trio bandido.jpeg", // 3 de Copas / Amistad
-                name: "Los Cómplices", 
-                meaning: "La banda de extorsionadores más buscada de todo Breña. Un día perfecto para planear algo divertido." 
-            },
-            { 
-                image: "Gato pinguiño.jpeg", // Autenticidad
-                name: "El Elegante", 
-                meaning: "Aunque a veces te sientas rara, tienes un estilo único. Acepta tu rareza hoy, es tu superpoder BROER MI KUATRII." 
-            },
-            { 
-                image: "Gato berrako.jpeg", // La Fuerza
-                name: "La Jefa", 
-                meaning: "Hoy mandas tú. Nadie te puede decir qué hacer. Berrakeria y flow por todos lados DIAVLOOO." 
-            }
+            { image: "Michichay.jpeg", name: "El Protagonista", meaning: "Como Michichay, hoy eres el centro de la historia. ¡Brilla con tu luz propia!" },
+            { image: "Fotooo.jpeg", name: "La Musa (Tú)", meaning: "La carta más bella. Hoy irradias arte e inspiración. El universo está enamorado de ti❤️" },
+            { image: "Gato Drogo.jpeg", name: "El Gato Viajero", meaning: "Estás en las nubes, soñando despierta. Déjate llevar por la imaginación. Estudiante de filosofia" },
+            { image: "Gato Cachondo.jpeg", name: "Pura Pasión", meaning: "Encerrado y enrejado por cachondo. Te sientes magnética. Cuidado con lo que deseas." },
+            { image: "Trio bandido.jpeg", name: "Los Cómplices", meaning: "Amistad y travesuras. Ríete de todo con los tuyos. TÚ SABES QUIEN ES MI VIEJO?" },
+            { image: "Gato pinguiño.jpeg", name: "El Elegante", meaning: "Tienes un estilo único. Acepta tu rareza, es tu superpoder. BROEER MANYAS MANYAS BROER" },
+            { image: "Gato berrako.jpeg", name: "La Jefa", meaning: "Hoy mandas tú. Tienes la fuerza para lograr lo que quieras. DIAVLOOO" }
         ];
-
-        function getDailyCard() {
-            const dateStr = new Date().toDateString();
-            let hash = 0;
-            for (let i = 0; i < dateStr.length; i++) hash = dateStr.charCodeAt(i) + ((hash << 5) - hash);
-            const index = Math.abs(hash) % deck.length;
-            return deck[index];
-        }
-
         function flipCard() {
-            const cardEl = document.getElementById('dailyCard');
-            if (cardEl.classList.contains('flipped')) return;
-            const cardData = getDailyCard();
-            document.getElementById('tarotImageSrc').src = cardData.image; 
-            document.getElementById('tarotName').innerText = cardData.name;
-            document.getElementById('tarotMeaning').innerText = cardData.meaning;
+            const cardEl = document.getElementById('dailyCard'); if(cardEl.classList.contains('flipped')) return;
+            const idx = Math.abs(new Date().toDateString().split('').reduce((a,b)=>a+b.charCodeAt(0),0)) % deck.length;
+            const data = deck[idx];
+            document.getElementById('tarotImageSrc').src = data.image; 
+            document.getElementById('tarotName').innerText = data.name;
+            document.getElementById('tarotMeaning').innerText = data.meaning;
             cardEl.classList.add('flipped');
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('tarot-date').innerText = "Predicción gatuna para el " + new Date().toLocaleDateString('es-ES', options);
+            document.getElementById('tarot-date').innerText = "Predicción para el " + new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
         }
 
-        // --- 6. 3D UNIVERSO REALISTA ---
+        // --- 7. 3D UNIVERSO ---
         let camera, scene, renderer, controls, wordGroup, starField;
         const container = document.getElementById('scene-container');
-        
-        function createStarTexture() {
-            const c = document.createElement('canvas'); c.width=64; c.height=64;
-            const ctx = c.getContext('2d');
-            const g = ctx.createRadialGradient(32,32,0,32,32,32);
-            g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(0.3,'rgba(220,220,255,0.6)'); g.addColorStop(1,'rgba(0,0,0,0)');
-            ctx.fillStyle=g; ctx.fillRect(0,0,64,64);
-            return new THREE.CanvasTexture(c);
-        }
-
         function init3D() {
             if(renderer) return; 
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.0015);
-            camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 3000);
-            camera.position.z = 800;
-            renderer = new THREE.WebGLRenderer({alpha:true, antialias:true});
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping=true; controls.enablePan=false; 
-            controls.enableZoom=true; controls.minDistance=300; controls.maxDistance=1500;
-            controls.autoRotate=true; controls.autoRotateSpeed=0.3;
-            controls.addEventListener('start', () => controls.autoRotate = false);
-
+            scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0x000000, 0.0015);
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth/container.clientHeight, 0.1, 3000); camera.position.z = 800;
+            renderer = new THREE.WebGLRenderer({alpha:true, antialias:true}); renderer.setSize(container.clientWidth, container.clientHeight); container.appendChild(renderer.domElement);
+            controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping=true; controls.enablePan=false; controls.autoRotate=true; controls.autoRotateSpeed=0.3;
+            controls.addEventListener('start', () => controls.autoRotate=false);
+            
             const geo = new THREE.BufferGeometry(); const pos = []; const sizes = [];
-            for(let i=0; i<5000; i++) {
-                pos.push((Math.random()-0.5)*3000, (Math.random()-0.5)*3000, (Math.random()-0.5)*3000);
-                sizes.push(Math.random()*3+0.5);
-            }
-            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-            geo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
-            const mat = new THREE.PointsMaterial({color:0xffffff, size:4, map:createStarTexture(), transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true});
-            starField = new THREE.Points(geo, mat);
-            scene.add(starField);
-            createSofi(); animate();
-        }
-
-        function createSofi() {
+            for(let i=0; i<5000; i++) { pos.push((Math.random()-0.5)*3000, (Math.random()-0.5)*3000, (Math.random()-0.5)*3000); sizes.push(Math.random()*3+0.5); }
+            geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); geo.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+            const tex = new THREE.CanvasTexture((function(){ const c=document.createElement('canvas');c.width=64;c.height=64;const x=c.getContext('2d');const g=x.createRadialGradient(32,32,0,32,32,32);g.addColorStop(0,'white');g.addColorStop(1,'transparent');x.fillStyle=g;x.fillRect(0,0,64,64);return c;})());
+            const mat = new THREE.PointsMaterial({color:0xffffff, size:4, map:tex, transparent:true, blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true});
+            starField = new THREE.Points(geo, mat); scene.add(starField);
+            
             wordGroup = new THREE.Group();
-            const matL = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
-            const matP = new THREE.PointsMaterial({color:0xffffff, size:5, map:createStarTexture(), transparent:true, blending:THREE.AdditiveBlending});
-            function addLetter(pts, x) {
+            const lMat = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
+            const pMat = new THREE.PointsMaterial({color:0xffffff, size:5, map:tex, transparent:true, blending:THREE.AdditiveBlending});
+            const letters = [
+                [[-20,30],[-20,-30],[0,-30],[0,0],[-20,0],[-20,30],[0,30]], // S (approx)
+                [[-20,30],[0,30],[0,-30],[-20,-30],[-20,30]], // O
+                [[-20,-30],[-20,30],[0,30],[-20,30],[-20,0],[0,0]], // F
+                [[0,30],[0,-30]] // I
+            ];
+            let xOff = -60;
+            letters.forEach(l => {
+                const pts = l.map(p => new THREE.Vector3(p[0]+xOff, p[1], 0));
                 const g = new THREE.BufferGeometry().setFromPoints(pts);
-                const l = new THREE.Line(g, matL); l.position.x=x;
-                const p = new THREE.Points(g, matP); p.position.x=x;
-                wordGroup.add(l, p);
-            }
-            const h=30, w=20;
-            addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,0,0), new THREE.Vector3(w,0,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0)], -60);
-            addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(w,h,0), new THREE.Vector3(w,-h,0), new THREE.Vector3(0,-h,0), new THREE.Vector3(0,h,0)], -30);
-            addLetter([new THREE.Vector3(w,h,0), new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 10); addLetter([new THREE.Vector3(0,0,0), new THREE.Vector3(w*0.7,0,0)], 10);
-            addLetter([new THREE.Vector3(0,h,0), new THREE.Vector3(0,-h,0)], 40);
-
-            wordGroup.rotation.set(Math.random()*Math.PI*2, Math.random()*Math.PI*2, Math.random()*Math.PI*2);
+                wordGroup.add(new THREE.Line(g, lMat), new THREE.Points(g, pMat));
+                xOff += 35;
+            });
+            wordGroup.rotation.set(Math.random()*6, Math.random()*6, Math.random()*6);
             wordGroup.position.set((Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
             scene.add(wordGroup);
+            animate();
         }
-        function animate() { requestAnimationFrame(animate); controls.update(); if(starField) starField.rotation.y += 0.0002; renderer.render(scene, camera); }
-        window.addEventListener('resize', () => { if(camera){ camera.aspect = container.clientWidth/container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); }});
+        function animate() { requestAnimationFrame(animate); controls.update(); if(starField) starField.rotation.y+=0.0002; renderer.render(scene, camera); }
+        window.addEventListener('resize', () => { if(camera){ camera.aspect = container.clientWidth/container.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(container.clientWidth, container.clientHeight); resizeGame(); }});
 
-        // 7. PLAYER MÚSICA ACTUALIZADO
+        // 8. PLAYER & ARCADE LINK
         const playlist = [ 
-            {title:"Taxi", file:"Taxi.mp3"}, 
-            {title:"Enamorado", file:"Enamorado.mp3"},
-            {title:"Flores", file:"Flores.mp3"},
-            {title:"Hecho para ti", file:"Hechoparati.mp3"},
-            {title:"No digas nada", file:"Nodigasnada.mp3"},
-            {title:"NeoRoneo", file:"NeoRoneo.mp3"}
+            {title:"Taxi", file:"Taxi.mp3"}, {title:"Enamorado", file:"Enamorado.mp3"},
+            {title:"Flores", file:"Flores.mp3"}, {title:"Hecho para ti", file:"Hechoparati.mp3"},
+            {title:"No digas nada", file:"Nodigasnada.mp3"}, {title:"NeoRoneo", file:"NeoRoneo.mp3"}
         ];
         let currSong = 0; const player = document.getElementById('audioPlayer'); let isPlaying = false;
+        
+        // Cargar juego inicial
+        loadGameForSong(playlist[0].title);
+
         function togglePlay() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             if(!playlist.length) return; if(!player.src) player.src = playlist[0].file;
@@ -498,8 +537,15 @@
             else { player.play(); document.getElementById('playBtn').innerText="⏸"; }
             isPlaying = !isPlaying;
         }
-        function nextSong() { currSong = (currSong+1)%playlist.length; player.src = playlist[currSong].file; document.getElementById('songTitle').innerText = playlist[currSong].title; if(isPlaying) player.play(); }
-        function prevSong() { currSong = (currSong-1+playlist.length)%playlist.length; player.src = playlist[currSong].file; document.getElementById('songTitle').innerText = playlist[currSong].title; if(isPlaying) player.play(); }
+        function nextSong() { currSong = (currSong+1)%playlist.length; updatePlayer(); }
+        function prevSong() { currSong = (currSong-1+playlist.length)%playlist.length; updatePlayer(); }
+        function updatePlayer() {
+            player.src = playlist[currSong].file;
+            const t = playlist[currSong].title;
+            document.getElementById('songTitle').innerText = t;
+            loadGameForSong(t); // CAMBIAR JUEGO AQUÍ
+            if(isPlaying) player.play();
+        }
     </script>
 </body>
 </html>
