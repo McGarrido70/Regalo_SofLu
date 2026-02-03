@@ -253,9 +253,9 @@
 
         function loadGameForSong(songName) {
             gameActive = false; cancelAnimationFrame(gameId); overlay.classList.remove('hidden');
-            if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Crazy Taxi"; }
-            else if(songName.includes("Flores")) { currentGameType = "flores"; gameTitle.innerText = "🌸 Jardín de Sofi"; }
-            else if(songName.includes("NeoRoneo")) { currentGameType = "neo"; gameTitle.innerText = "🎸 NeoRoneo Love"; }
+            if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Escapando en Taxi"; }
+            else if(songName.includes("Flores")) { currentGameType = "flores"; gameTitle.innerText = "🌸 Flores para Sofi"; }
+            else if(songName.includes("NeoRoneo")) { currentGameType = "neo"; gameTitle.innerText = "🎸 NeoReno"; }
             else { currentGameType = "visual"; gameTitle.innerText = "❤️ Ritmo Relax"; }
         }
 
@@ -344,7 +344,7 @@
             // Chico animado (Ciclo de frames 1-6)
             if(gameAssets.chicoFrames.length > 0) {
                 // Cambiar frame cada 10 ticks del juego
-                let frameIndex = Math.floor(frameCount / 10) % gameAssets.chicoFrames.length;
+                let frameIndex = Math.floor(frameCount / 20) % gameAssets.chicoFrames.length;
                 let currentImg = gameAssets.chicoFrames[frameIndex];
                 
                 if(currentImg && currentImg.complete) {
