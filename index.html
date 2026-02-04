@@ -253,9 +253,9 @@
 
         function loadGameForSong(songName) {
             gameActive = false; cancelAnimationFrame(gameId); overlay.classList.remove('hidden');
-            if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Escapando en Taxi"; }
+            if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Escapando en el Taxi"; }
             else if(songName.includes("Flores")) { currentGameType = "flores"; gameTitle.innerText = "🌸 Flores para Sofi"; }
-            else if(songName.includes("NeoRoneo")) { currentGameType = "neo"; gameTitle.innerText = "🎸 NeoReno"; }
+            else if(songName.includes("NeoRoneo")) { currentGameType = "neo"; gameTitle.innerText = "🎸 NeoRoneo Love"; }
             else { currentGameType = "visual"; gameTitle.innerText = "❤️ Ritmo Relax"; }
         }
 
@@ -344,7 +344,7 @@
             // Chico animado (Ciclo de frames 1-6)
             if(gameAssets.chicoFrames.length > 0) {
                 // Cambiar frame cada 10 ticks del juego
-                let frameIndex = Math.floor(frameCount / 20) % gameAssets.chicoFrames.length;
+                let frameIndex = Math.floor(frameCount / 10) % gameAssets.chicoFrames.length;
                 let currentImg = gameAssets.chicoFrames[frameIndex];
                 
                 if(currentImg && currentImg.complete) {
@@ -446,10 +446,10 @@
         // --- 6. GA-TAROT ---
         const deck = [
             { image: "Michichay.jpeg", name: "El Protagonista", meaning: "Como Michichay, hoy eres el centro de la historia. ¡Brilla con tu luz propia!" },
-            { image: "Fotooo.jpeg", name: "La Musa (Tú)", meaning: "La carta más bella. Hoy irradias arte e inspiración. El universo esta enamorado de ti.💕" },
-            { image: "Gato Drogo.jpeg", name: "El Gato Drogo", meaning: "Estás en las nubes, soñando despierta. Déjate llevar por la imaginación." },
-            { image: "Gato Cachondo.jpeg", name: "Pura Pasión", meaning: "Fuego en el aire. Te sientes magnética. Cuidado con lo que deseas." },
-            { image: "Trio bandido.jpeg", name: "Los Cómplices", meaning: "Amistad y travesuras. Ríete de todo con los tuyos." },
+            { image: "Fotooo.jpeg", name: "La Musa (Tú)", meaning: "La carta más bella. Hoy irradias arte e inspiración. El universo te sonríe.💕" },
+            { image: "Gato Drogo.jpeg", name: "El Gato Drogo", meaning: "Estás un poco en las nubes hoy, y está bien. Es un día para soñar despierta, reírte de la nada y lokuraaa hfweebew." },
+            { image: "Gato Cachondo.jpeg", name: "Pura Pasión", meaning: "Hay fuego en el aire hoy por eso estas encerrado por cachondo. Te sientes magnética e irresistible. Cuidado con lo que deseas, que se cumple." },
+            { image: "Trio bandido.jpeg", name: "Los Bandidos de Breña", meaning: "La banda de extorsionadores más buscada de todo Breña. Un día perfecto para planear algo divertido." },
             { image: "Gato pinguiño.jpeg", name: "El Elegante", meaning: "Aunque a veces te sientas rara, tienes un estilo único. Acepta tu rareza hoy, es tu superpoder BROER MI KUATRII." },
             { image: "Gato berrako.jpeg", name: "La Jefa", meaning: "Hoy mandas tú. Nadie te puede decir qué hacer. Berrakeria y flow por todos lados DIAVLOOO." }
         ];
@@ -485,8 +485,9 @@
             wordGroup = new THREE.Group();
             const lMat = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
             const pMat = new THREE.PointsMaterial({color:0xffffff, size:5, map:tex, transparent:true, blending:THREE.AdditiveBlending});
+            // SOFI CORRECTO (S arreglada)
             const letters = [
-                [[-20,30],[-20,-30],[0,-30],[0,0],[-20,0],[-20,30],[0,30]], // S
+                [[0,30],[-20,30],[-20,0],[0,0],[0,-30],[-20,-30]], // S (Corregida)
                 [[-20,30],[0,30],[0,-30],[-20,-30],[-20,30]], // O
                 [[-20,-30],[-20,30],[0,30],[-20,30],[-20,0],[0,0]], // F
                 [[0,30],[0,-30]] // I
