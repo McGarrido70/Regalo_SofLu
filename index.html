@@ -186,34 +186,38 @@
         
         // --- CARGAR ASSETS (IMÁGENES INDIVIDUALES) ---
         const gameAssets = {
-            taxi: new Image(),
-            carEnemy: new Image(),
-            basket: new Image(),
-            stone: new Image(),
-            corazon: new Image(),
-            roto: new Image(),
-            chicoFrames: [], // Array para animación guitarrista
-            flowerTypes: []  // Array para tipos de flores
+            // Fondos
+            fondoTaxi: new Image(),
+            fondoJardin: new Image(),
+            // Objetos
+            taxi: new Image(), carEnemy: new Image(),
+            basket: new Image(), stone: new Image(),
+            // Burbujas y Explosiones
+            bubbleGood: new Image(), bubbleBad: new Image(),
+            expGood: new Image(), expBad: new Image(),
+            // Arrays
+            chicoFrames: [], flowerTypes: []
         };
 
         // Asignar fuentes (Nombres exactos)
+        gameAssets.fondoTaxi.src = 'fondotaxi.png';
+        gameAssets.fondoJardin.src = 'fondojardin.jpg';
         gameAssets.taxi.src = 'taxi.png';
         gameAssets.carEnemy.src = 'cocheobstaculo.png';
         gameAssets.basket.src = 'cesta.png';
         gameAssets.stone.src = 'piedra.png';
-        gameAssets.corazon.src = 'corazonrojo.png';
-        gameAssets.roto.src = 'corazonroto.png';
+        gameAssets.bubbleGood.src = 'burbujacorazon.png';
+        gameAssets.bubbleBad.src = 'burbujacorazonroto.png';
+        gameAssets.expGood.src = 'explosioncorazon.png';
+        gameAssets.expBad.src = 'explosioncorazonroto.png';
 
-        // Cargar los 6 frames del chico (1frame.png, 2frame.png...)
-        const chicoFiles = ['2frame.png', '3frame.png', '4frame.png', '5frame.png', '6frames.png'];
-        chicoFiles.forEach(file => {
-            let img = new Image(); img.src = file; gameAssets.chicoFrames.push(img);
+        // Cargar frames del chico
+        ['1frame.png', '2frame.png', '3frame.png', '4frame.png', '5frame.png', '6frames.png'].forEach(f => {
+            let img = new Image(); img.src = f; gameAssets.chicoFrames.push(img);
         });
-
-        // Cargar los tipos de flores
-        const flowerFiles = ['ortalisa.png', 'hortensia.png', 'orquidea.png', 'girasol.png', 'rosa.png', 'tulipan.png'];
-        flowerFiles.forEach(file => {
-            let img = new Image(); img.src = file; gameAssets.flowerTypes.push(img);
+        // Cargar flores
+        ['ortalisa.png', 'hortensia.png', 'orquidea.png', 'girasol.png', 'rosa.png', 'tulipan.png'].forEach(f => {
+            let img = new Image(); img.src = f; gameAssets.flowerTypes.push(img);
         });
 
         function startExperience() {
@@ -230,6 +234,8 @@
         const gameTitle = document.getElementById('gameTitle');
         let gameId, score=0, gameActive=false, currentGameType="";
         let frameCount = 0;
+        // Variables para scroll de fondo
+        let bgY_taxi = 0, bgY_flores = 0; const SCROLL_SPEED = 5;
 
         function resizeGame() { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
         window.addEventListener('resize', resizeGame); resizeGame();
@@ -253,8 +259,8 @@
 
         function loadGameForSong(songName) {
             gameActive = false; cancelAnimationFrame(gameId); overlay.classList.remove('hidden');
-            if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Escapando en el Taxi"; }
-            else if(songName.includes("Flores")) { currentGameType = "flores"; gameTitle.innerText = "🌸 Flores para Sofi"; }
+            if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Crazy Taxi"; }
+            else if(songName.includes("Flores")) { currentGameType = "flores"; gameTitle.innerText = "🌸 Jardín de Sofi"; }
             else if(songName.includes("NeoRoneo")) { currentGameType = "neo"; gameTitle.innerText = "🎸 NeoRoneo Love"; }
             else { currentGameType = "visual"; gameTitle.innerText = "❤️ Ritmo Relax"; }
         }
@@ -267,47 +273,48 @@
             else initVisual();
         }
 
-        // --- JUEGO 1: TAXI ---
+        // --- JUEGO 1: TAXI (Con Fondo Scroll) ---
         let carX, obstacles;
-        function initTaxi() { carX = canvas.width/2; obstacles = []; loopTaxi(); }
+        function initTaxi() { carX = canvas.width/2; obstacles = []; bgY_taxi = 0; loopTaxi(); }
         function loopTaxi() {
             if(!gameActive) return;
-            // Fondo
-            ctx.fillStyle = "#333"; ctx.fillRect(0,0,canvas.width,canvas.height); 
-            ctx.strokeStyle = "#fff"; ctx.setLineDash([20, 20]); ctx.beginPath(); ctx.moveTo(canvas.width/2, 0); ctx.lineTo(canvas.width/2, canvas.height); ctx.stroke();
+            // Fondo con scroll
+            bgY_taxi = (bgY_taxi + SCROLL_SPEED) % canvas.height;
+            if(gameAssets.fondoTaxi.complete) {
+                ctx.drawImage(gameAssets.fondoTaxi, 0, bgY_taxi - canvas.height, canvas.width, canvas.height);
+                ctx.drawImage(gameAssets.fondoTaxi, 0, bgY_taxi, canvas.width, canvas.height);
+            } else { ctx.fillStyle = "#333"; ctx.fillRect(0,0,canvas.width,canvas.height); }
 
             if(inputX < 0 && carX > 40) carX -= 6; if(inputX > 0 && carX < canvas.width - 40) carX += 6;
-            
             if(gameAssets.taxi.complete) ctx.drawImage(gameAssets.taxi, carX-25, canvas.height-80, 50, 80);
-            else { ctx.fillStyle="yellow"; ctx.fillRect(carX-20, canvas.height-60, 40, 60); }
-
+            
             if(Math.random() < 0.02) obstacles.push({x: Math.random()*(canvas.width-60)+30, y: -60});
             for(let i=0; i<obstacles.length; i++) {
                 let o = obstacles[i]; o.y += 7;
                 if(gameAssets.carEnemy.complete) ctx.drawImage(gameAssets.carEnemy, o.x-25, o.y, 50, 80);
-                else { ctx.fillStyle="red"; ctx.fillRect(o.x-20, o.y, 40, 60); }
-                
                 if(Math.abs(o.x - carX) < 40 && Math.abs(o.y - (canvas.height-80)) < 70) { gameOver(); return; }
             }
             score++; ctx.fillStyle="white"; ctx.font="20px Arial"; ctx.fillText("Score: "+score, 50, 30);
             gameId = requestAnimationFrame(loopTaxi);
         }
 
-        // --- JUEGO 2: FLORES ---
+        // --- JUEGO 2: FLORES (Con Fondo Scroll) ---
         let basketX, fallingObjects;
-        function initFlores() { basketX = canvas.width/2; fallingObjects = []; loopFlores(); }
+        function initFlores() { basketX = canvas.width/2; fallingObjects = []; bgY_flores = 0; loopFlores(); }
         function loopFlores() {
             if(!gameActive) return;
-            ctx.fillStyle = "#2a5"; ctx.fillRect(0,0,canvas.width,canvas.height); 
-            
+            // Fondo con scroll
+            bgY_flores = (bgY_flores + SCROLL_SPEED) % canvas.height;
+            if(gameAssets.fondoJardin.complete) {
+                ctx.drawImage(gameAssets.fondoJardin, 0, bgY_flores - canvas.height, canvas.width, canvas.height);
+                ctx.drawImage(gameAssets.fondoJardin, 0, bgY_flores, canvas.width, canvas.height);
+            } else { ctx.fillStyle = "#2a5"; ctx.fillRect(0,0,canvas.width,canvas.height); }
+
             if(inputX < 0 && basketX > 30) basketX -= 6; if(inputX > 0 && basketX < canvas.width - 30) basketX += 6;
-            
             if(gameAssets.basket.complete) ctx.drawImage(gameAssets.basket, basketX-30, canvas.height-50, 60, 40);
-            else { ctx.fillStyle="brown"; ctx.fillRect(basketX-30, canvas.height-40, 60, 30); }
 
             if(Math.random() < 0.03) {
                 let isStone = Math.random() > 0.8; 
-                // Elegir flor aleatoria del array
                 let fIndex = Math.floor(Math.random() * gameAssets.flowerTypes.length);
                 fallingObjects.push({x: Math.random()*canvas.width, y: -30, type: isStone ? 'stone' : 'flower', id: fIndex});
             }
@@ -315,15 +322,11 @@
             for(let i=0; i<fallingObjects.length; i++) {
                 let o = fallingObjects[i]; o.y += 3;
                 if(o.type === 'flower') {
-                    // Dibujar la flor específica del array
                     let img = gameAssets.flowerTypes[o.id];
                     if(img && img.complete) ctx.drawImage(img, o.x-15, o.y-15, 30, 30);
-                    else ctx.fillText("🌸", o.x, o.y);
                 } else {
                     if(gameAssets.stone.complete) ctx.drawImage(gameAssets.stone, o.x-15, o.y-15, 30, 30);
-                    else ctx.fillText("🪨", o.x, o.y);
                 }
-
                 if(Math.abs(o.x - basketX) < 40 && Math.abs(o.y - (canvas.height-40)) < 30) {
                     if(o.type === 'stone') { gameOver(); return; }
                     score += 10; fallingObjects.splice(i, 1); i--;
@@ -333,7 +336,7 @@
             gameId = requestAnimationFrame(loopFlores);
         }
 
-        // --- JUEGO 3: NEORONEO (Animación con Frames) ---
+        // --- JUEGO 3: NEORONEO (Con Burbujas y Explosiones) ---
         let neoBubbles;
         function initNeo() { neoBubbles = []; loopNeo(); }
         function loopNeo() {
@@ -341,38 +344,52 @@
             ctx.fillStyle = "#102"; ctx.fillRect(0,0,canvas.width,canvas.height);
             frameCount++;
             
-            // Chico animado (Ciclo de frames 1-6)
+            // Chico animado
             if(gameAssets.chicoFrames.length > 0) {
-                // Cambiar frame cada 10 ticks del juego
                 let frameIndex = Math.floor(frameCount / 10) % gameAssets.chicoFrames.length;
                 let currentImg = gameAssets.chicoFrames[frameIndex];
-                
-                if(currentImg && currentImg.complete) {
-                    ctx.drawImage(currentImg, canvas.width/2 - 60, canvas.height - 130, 120, 120);
-                }
-            } else { ctx.fillText("🎸", canvas.width/2, canvas.height-50); }
+                if(currentImg && currentImg.complete) ctx.drawImage(currentImg, canvas.width/2 - 60, canvas.height - 130, 120, 120);
+            }
 
             if(Math.random() < 0.04) {
                 let t = Math.random() > 0.3 ? 'good' : 'bad';
-                neoBubbles.push({x: Math.random()*(canvas.width-40)+20, y: -40, type: t});
+                neoBubbles.push({x: Math.random()*(canvas.width-40)+20, y: -50, type: t, isExploding: false, expStart: 0});
             }
 
             for(let i=0; i<neoBubbles.length; i++) {
-                let b = neoBubbles[i]; b.y += 2.5;
-                let img = (b.type === 'good') ? gameAssets.corazon : gameAssets.roto;
-                if(img.complete) ctx.drawImage(img, b.x-20, b.y-20, 40, 40);
-                if(b.y > canvas.height) { neoBubbles.splice(i,1); i--; }
+                let b = neoBubbles[i];
+                
+                if(b.isExploding) {
+                    // Dibujar explosión
+                    let elapsed = Date.now() - b.expStart;
+                    if(elapsed < 300) { // Duración explosión 300ms
+                        let expImg = (b.type === 'good') ? gameAssets.expGood : gameAssets.expBad;
+                        if(expImg.complete) ctx.drawImage(expImg, b.x-30, b.y-30, 60, 60);
+                    } else {
+                        // Fin explosión: aplicar efecto
+                        if(b.type === 'good') score += 10; else { gameOver(); return; }
+                        neoBubbles.splice(i, 1); i--;
+                    }
+                } else {
+                    // Dibujar burbuja normal
+                    b.y += 2.5;
+                    let img = (b.type === 'good') ? gameAssets.bubbleGood : gameAssets.bubbleBad;
+                    if(img.complete) ctx.drawImage(img, b.x-25, b.y-25, 50, 50);
+                    if(b.y > canvas.height + 50) { neoBubbles.splice(i,1); i--; }
+                }
             }
             ctx.fillStyle="white"; ctx.fillText("Amor: "+score, 60, 30);
             gameId = requestAnimationFrame(loopNeo);
         }
+        
         function checkNeoClick(x, y) {
             for(let i=0; i<neoBubbles.length; i++) {
                 let b = neoBubbles[i];
-                if(Math.sqrt((x-b.x)**2 + (y-b.y)**2) < 30) {
-                    if(b.type === 'good') { score += 10; neoBubbles.splice(i,1); }
-                    else gameOver();
-                    break;
+                // Si no está explotando y le damos click
+                if(!b.isExploding && Math.sqrt((x-b.x)**2 + (y-b.y)**2) < 40) {
+                    b.isExploding = true;
+                    b.expStart = Date.now();
+                    break; // Solo explotar una a la vez
                 }
             }
         }
@@ -464,7 +481,7 @@
             document.getElementById('tarot-date').innerText = "Predicción gatuna para el " + new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
         }
 
-        // --- 7. 3D UNIVERSO ---
+       // --- 7. 3D UNIVERSO ---
         let camera, scene, renderer, controls, wordGroup, starField;
         const container = document.getElementById('scene-container');
         function init3D() {
@@ -485,19 +502,21 @@
             wordGroup = new THREE.Group();
             const lMat = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
             const pMat = new THREE.PointsMaterial({color:0xffffff, size:5, map:tex, transparent:true, blending:THREE.AdditiveBlending});
-            // SOFI CORRECTO (S arreglada)
+            
+            // SOFI (Letras juntas)
             const letters = [
-                [[0,30],[-20,30],[-20,0],[0,0],[0,-30],[-20,-30]], // S (Corregida)
+                [[0,30],[-20,30],[-20,0],[0,0],[0,-30],[-20,-30]], // S
                 [[-20,30],[0,30],[0,-30],[-20,-30],[-20,30]], // O
                 [[-20,-30],[-20,30],[0,30],[-20,30],[-20,0],[0,0]], // F
                 [[0,30],[0,-30]] // I
             ];
             let xOff = -60;
-            letters.forEach(l => {
+            letters.forEach((l, index) => {
                 const pts = l.map(p => new THREE.Vector3(p[0]+xOff, p[1], 0));
                 const g = new THREE.BufferGeometry().setFromPoints(pts);
                 wordGroup.add(new THREE.Line(g, lMat), new THREE.Points(g, pMat));
-                xOff += 35;
+                // Juntar más la 'I' (índice 3) a la 'F'
+                xOff += (index === 2) ? 25 : 35; 
             });
             wordGroup.rotation.set(Math.random()*6, Math.random()*6, Math.random()*6);
             wordGroup.position.set((Math.random()-0.5)*1000, (Math.random()-0.5)*1000, (Math.random()-0.5)*1000);
