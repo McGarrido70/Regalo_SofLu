@@ -63,8 +63,8 @@
         .tarot-meaning { font-size: 0.85rem; color: #ccc; line-height: 1.3; }
 
         /* --- ZONA ARCADE --- */
-        .arcade-section { width: 95%; max-width: 600px; margin: 0 auto 150px auto; background: #111; border: 4px solid #d400ff; border-radius: 10px; position: relative; overflow: hidden; height: 350px; box-shadow: 0 0 20px rgba(212, 0, 255, 0.3); touch-action: none; }
-        #gameCanvas { width: 100%; height: 100%; display: block; background: #222; }
+        .arcade-section { width: 95%; max-width: 600px; margin: 0 auto 150px auto; background: #111; border: 4px solid #d400ff; border-radius: 10px; position: relative; overflow: hidden; height: 350px; box-shadow: 0 0 20px rgba(212, 0, 255, 0.3); touch-action: none; background-size: cover; background-position: center; }
+        #gameCanvas { width: 100%; height: 100%; display: block; background: transparent; }
         .game-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; pointer-events: none; }
         .game-overlay.hidden { display: none; pointer-events: none; }
         .game-title { font-size: 2rem; color: #ffd700; text-shadow: 2px 2px #d400ff; margin-bottom: 10px; font-weight: bold; }
@@ -184,28 +184,23 @@
         // --- 2. START & AUDIO ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // --- CARGAR ASSETS (IMÁGENES INDIVIDUALES) ---
+        // --- CARGAR ASSETS ---
         const gameAssets = {
-            // Fondos
-            fondoTaxi: new Image(), fondoJardin: new Image(), fondoCorrer: new Image(), fondoGalaxia: new Image(),
-            // Objetos
+            fondoTaxi: new Image(), fondoJardin: new Image(), fondoCorrer: new Image(), fondoSnake: new Image(),
             taxi: new Image(), carEnemy: new Image(),
             basket: new Image(), stone: new Image(),
             nave: new Image(), propul: new Image(), estrella: new Image(), asteroide: new Image(),
             snakeHead: new Image(), snakeBody: new Image(),
-            // Runner
             obsCielo: new Image(), obsTierra: new Image(),
-            // Burbujas y Explosiones
             bubbleGood: new Image(), bubbleBad: new Image(), expGood: new Image(), expBad: new Image(),
-            // Arrays
             chicoFrames: [], runnerFrames: [], flowerTypes: [], foods: []
         };
 
-        // Asignar fuentes (Nombres exactos)
+        // Fuentes
         gameAssets.fondoTaxi.src = 'fondotaxihecho.png';
         gameAssets.fondoJardin.src = 'verde.png';
         gameAssets.fondoCorrer.src = 'fondocorrer.png';
-        gameAssets.fondoGalaxia.src = 'galaxiafondo.png';
+        gameAssets.fondoSnake.src = 'fondoserpiente.png';
         
         gameAssets.taxi.src = 'taxi.png';
         gameAssets.carEnemy.src = 'cocheobstaculo.png';
@@ -228,7 +223,6 @@
         gameAssets.expGood.src = 'explosioncorazon.png';
         gameAssets.expBad.src = 'explosioncorazonroto.png';
 
-        // Cargar Arrays
         ['2frame.png', '3frame.png', '4frame.png', '5frame.png', '6frames.png'].forEach(f => { let img=new Image(); img.src=f; gameAssets.chicoFrames.push(img); });
         ['1correr.png', '2correr.png', '3correr.png', '4correr.png'].forEach(f => { let img=new Image(); img.src=f; gameAssets.runnerFrames.push(img); });
         ['ortalisa.png', 'hortensia.png', 'orquidea.png', 'girasol.png', 'rosa.png', 'tulipan.png'].forEach(f => { let img=new Image(); img.src=f; gameAssets.flowerTypes.push(img); });
@@ -246,6 +240,7 @@
         const ctx = canvas.getContext('2d');
         const overlay = document.getElementById('gameOverlay');
         const gameTitle = document.getElementById('gameTitle');
+        const arcadeDiv = document.getElementById('arcadeArea'); // Para cambiar fondo
         let gameId, score=0, gameActive=false, currentGameType="";
         let frameCount = 0;
         let bgY_taxi = 0, bgY_flores = 0, bgX_runner = 0; const SCROLL_SPEED = 5;
@@ -253,13 +248,10 @@
         function resizeGame() { canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
         window.addEventListener('resize', resizeGame); resizeGame();
 
-        // INPUTS (Actualizado para control Y)
-        let inputX = 0, inputY = 0;
-        let mouseX = 0, mouseY = 0; // Para seguimiento libre
+        let inputX = 0;
+        let mouseX = 0, mouseY = 0;
 
-        canvas.addEventListener('mousemove', (e) => {
-            mouseX = e.offsetX; mouseY = e.offsetY;
-        });
+        canvas.addEventListener('mousemove', (e) => { mouseX = e.offsetX; mouseY = e.offsetY; });
         canvas.addEventListener('mousedown', (e) => {
             if(!gameActive) { startGame(); return; }
             inputX = (e.offsetX < canvas.width/2) ? -1 : 1;
@@ -280,7 +272,6 @@
             const rect = canvas.getBoundingClientRect();
             mouseX = e.touches[0].clientX - rect.left;
             mouseY = e.touches[0].clientY - rect.top;
-            
             inputX = (mouseX < canvas.width/2) ? -1 : 1;
             if(currentGameType === 'neo') checkNeoClick(mouseX, mouseY);
             if(currentGameType === 'snake') handleSnakeInput(mouseX, mouseY);
@@ -289,18 +280,25 @@
 
         function loadGameForSong(songName) {
             gameActive = false; cancelAnimationFrame(gameId); overlay.classList.remove('hidden');
+            // Reset background
+            arcadeDiv.style.backgroundImage = "none";
+            
             if(songName.includes("Taxi")) { currentGameType = "taxi"; gameTitle.innerText = "🚕 Crazy Taxi"; }
             else if(songName.includes("Flores")) { currentGameType = "flores"; gameTitle.innerText = "🌸 Jardín de Sofi"; }
             else if(songName.includes("NeoRoneo")) { currentGameType = "neo"; gameTitle.innerText = "🎸 NeoRoneo Love"; }
             else if(songName.includes("Enamorado")) { currentGameType = "runner"; gameTitle.innerText = "🏃 Enamorado Runner"; }
             else if(songName.includes("Hecho para ti")) { currentGameType = "snake"; gameTitle.innerText = "🐍 Snake de Favoritos"; }
-            else if(songName.includes("No digas nada")) { currentGameType = "space"; gameTitle.innerText = "🚀 Viaje Galáctico"; }
+            else if(songName.includes("No digas nada")) { 
+                currentGameType = "space"; 
+                gameTitle.innerText = "🚀 Viaje Galáctico";
+                // ACTIVA EL GIF AQUÍ
+                arcadeDiv.style.backgroundImage = "url('galaxiafondo.gif')";
+            }
             else { currentGameType = "visual"; gameTitle.innerText = "❤️ Ritmo Relax"; }
         }
 
         function startGame() {
             gameActive = true; overlay.classList.add('hidden'); score = 0; frameCount = 0;
-            // Reset variables
             if(currentGameType === "taxi") initTaxi();
             else if(currentGameType === "flores") initFlores();
             else if(currentGameType === "neo") initNeo();
@@ -310,7 +308,7 @@
             else initVisual();
         }
 
-        // --- JUEGO 1: TAXI ---
+        // TAXI
         let carX, obstacles;
         function initTaxi() { carX = canvas.width/2; obstacles = []; bgY_taxi = 0; loopTaxi(); }
         function loopTaxi() {
@@ -333,7 +331,7 @@
             score++; drawScore(); gameId = requestAnimationFrame(loopTaxi);
         }
 
-        // --- JUEGO 2: FLORES ---
+        // FLORES
         let basketX, fallingObjects;
         function initFlores() { basketX = canvas.width/2; fallingObjects = []; bgY_flores = 0; loopFlores(); }
         function loopFlores() {
@@ -368,7 +366,7 @@
             drawScore(); gameId = requestAnimationFrame(loopFlores);
         }
 
-        // --- JUEGO 3: NEORONEO ---
+        // NEORONEO
         let neoBubbles;
         function initNeo() { neoBubbles = []; loopNeo(); }
         function loopNeo() {
@@ -413,30 +411,26 @@
             }
         }
 
-        // --- JUEGO 4: RUNNER (MEJORADO - VUELO LIBRE) ---
+        // RUNNER
         let runnerY, runObstacles;
         function initRunner() { runnerY = canvas.height/2; runObstacles = []; bgX_runner = 0; loopRunner(); }
         function loopRunner() {
             if(!gameActive) return;
             frameCount++;
-            // Fondo Scroll
             bgX_runner = (bgX_runner - 3) % canvas.width;
             if(gameAssets.fondoCorrer.complete) {
                 ctx.drawImage(gameAssets.fondoCorrer, bgX_runner, 0, canvas.width, canvas.height);
                 ctx.drawImage(gameAssets.fondoCorrer, bgX_runner + canvas.width, 0, canvas.width, canvas.height);
             } else { ctx.fillStyle = "skyblue"; ctx.fillRect(0,0,canvas.width,canvas.height); }
 
-            // Movimiento Libre Y (Sigue el mouse/dedo)
             if(mouseY > 0) runnerY += (mouseY - runnerY) * 0.1;
             
-            // Dibujar Runner Animado
             if(gameAssets.runnerFrames.length > 0) {
                 let frameIndex = Math.floor(frameCount / 8) % gameAssets.runnerFrames.length;
                 let img = gameAssets.runnerFrames[frameIndex];
                 if(img.complete) ctx.drawImage(img, 50, runnerY-30, 60, 60);
             }
 
-            // Obstáculos más grandes y transparentes
             if(Math.random() < 0.02) {
                 let isSky = Math.random() > 0.5;
                 runObstacles.push({x: canvas.width, y: isSky ? Math.random()*100 : canvas.height-Math.random()*100-50, type: isSky ? 'sky' : 'ground'});
@@ -444,20 +438,19 @@
             for(let i=0; i<runObstacles.length; i++) {
                 let o = runObstacles[i]; o.x -= 5;
                 let img = (o.type === 'sky') ? gameAssets.obsCielo : gameAssets.obsTierra;
-                if(img.complete) ctx.drawImage(img, o.x, o.y, 60, 60); // Más grande
+                if(img.complete) ctx.drawImage(img, o.x, o.y, 60, 60); 
                 
-                // Colisión
                 if(o.x < 90 && o.x > 30 && Math.abs((runnerY) - (o.y+30)) < 40) { gameOver(); return; }
                 if(o.x < -60) { runObstacles.splice(i,1); i--; score += 5; }
             }
             drawScore(); gameId = requestAnimationFrame(loopRunner);
         }
 
-        // --- JUEGO 5: SNAKE (ROTACION CABEZA) ---
+        // SNAKE
         let snake, dir, food; const gridSize = 20;
         function initSnake() { 
             snake = [{x:10, y:10}, {x:9, y:10}]; dir = {x:1, y:0}; 
-            spawnFood(); setTimeout(loopSnake, 100); 
+            spawnFood(); setTimeout(loopSnake, 200); // MÁS LENTO
         }
         function spawnFood() {
             food = {
@@ -479,7 +472,10 @@
         }
         function loopSnake() {
             if(!gameActive) return;
-            ctx.fillStyle = "#222"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            
+            // Fondo estático
+            if(gameAssets.fondoSnake.complete) ctx.drawImage(gameAssets.fondoSnake, 0, 0, canvas.width, canvas.height);
+            else { ctx.fillStyle = "#222"; ctx.fillRect(0,0,canvas.width,canvas.height); }
             
             let head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
             if(head.x < 0 || head.x >= canvas.width/gridSize || head.y < 0 || head.y >= canvas.height/gridSize) { gameOver(); return; }
@@ -488,15 +484,12 @@
             snake.unshift(head);
             if(head.x === food.x && head.y === food.y) { score += 10; spawnFood(); } else { snake.pop(); }
 
-            // Comida
             let fImg = gameAssets.foods[food.type];
             if(fImg && fImg.complete) ctx.drawImage(fImg, food.x*gridSize, food.y*gridSize, gridSize, gridSize);
 
-            // Snake
             for(let i=0; i<snake.length; i++) {
                 let p = snake[i];
                 if(i===0 && gameAssets.snakeHead.complete) {
-                    // ROTACIÓN CABEZA
                     ctx.save();
                     ctx.translate(p.x*gridSize + gridSize/2, p.y*gridSize + gridSize/2);
                     let angle = 0;
@@ -511,40 +504,36 @@
                 else if(gameAssets.snakeBody.complete) ctx.drawImage(gameAssets.snakeBody, p.x*gridSize, p.y*gridSize, gridSize, gridSize);
                 else { ctx.fillStyle="lime"; ctx.fillRect(p.x*gridSize, p.y*gridSize, gridSize, gridSize); }
             }
-            drawScore(); setTimeout(() => requestAnimationFrame(loopSnake), 100);
+            drawScore(); setTimeout(() => requestAnimationFrame(loopSnake), 200); // VELOCIDAD CONTROLADA
         }
 
-        // --- JUEGO 6: SPACE (ROTACIÓN Y PROPULSIÓN) ---
+        // SPACE (NO DIGAS NADA)
         let naveX, naveY, spaceObjects;
         function initSpace() { naveX = canvas.width/2; naveY = canvas.height/2; spaceObjects = []; loopSpace(); }
         function loopSpace() {
             if(!gameActive) return;
-            if(gameAssets.fondoGalaxia.complete) ctx.drawImage(gameAssets.fondoGalaxia, 0, 0, canvas.width, canvas.height);
-            else { ctx.fillStyle = "black"; ctx.fillRect(0,0,canvas.width,canvas.height); }
+            // El fondo se maneja por CSS (GIF) así que limpiamos
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Movimiento Libre Suave
             if(mouseX > 0) {
                 naveX += (mouseX - naveX) * 0.05;
                 naveY += (mouseY - naveY) * 0.05;
             }
             
-            // Dibujar Nave con Rotación y Propulsión
             ctx.save();
             ctx.translate(naveX, naveY);
-            // La nave original mira a la IZQUIERDA. 
-            // Queremos que mire al mouse.
-            let dx = mouseX - naveX;
-            let dy = mouseY - naveY;
+            let dx = mouseX - naveX; let dy = mouseY - naveY;
             let angle = Math.atan2(dy, dx); 
-            // Ajuste: si la imagen mira a la izquierda (180deg / PI), y atan2 da 0 a la derecha...
-            // Necesitamos rotar la imagen PI para que su "frente" (izquierda) apunte a la derecha.
             ctx.rotate(angle + Math.PI); 
 
             if(gameAssets.nave.complete) {
-                // Nave
-                ctx.drawImage(gameAssets.nave, -25, -25, 50, 50);
-                // Propulsión (detrás, osea a la derecha de la imagen porque mira a izq)
-                if(gameAssets.propul.complete) ctx.drawImage(gameAssets.propul, 20, -10, 30, 20);
+                // Nave más chica (35x35)
+                ctx.drawImage(gameAssets.nave, -17, -17, 35, 35);
+                // Propulsión vibrante
+                if(gameAssets.propul.complete) {
+                    let bob = Math.sin(Date.now() / 100) * 2;
+                    ctx.drawImage(gameAssets.propul, 18 + bob, -8, 20, 16); 
+                }
             }
             ctx.restore();
 
@@ -578,6 +567,81 @@
         function drawScore() { ctx.fillStyle="white"; ctx.font="20px Arial"; ctx.fillText("Score: "+score, 60, 30); }
         function gameOver() { gameActive = false; gameTitle.innerText = "Game Over!"; overlay.classList.remove('hidden'); }
 
+        // --- 4. UKELELE LÓGICA ---
+        const openFreqs = [440.00, 329.63, 261.63, 392.00]; 
+        const chords = { 'C':[3,0,0,0], 'G':[2,3,2,0], 'F':[0,1,0,2], 'Am':[0,0,0,2], 'Dm':[0,1,2,2], 'Em':[2,3,4,0], 'A':[0,0,1,2], 'D':[0,2,2,2], 'E7':[2,0,2,1], 'G7':[2,1,2,0], 'C7':[1,0,0,0], 'Bb':[1,1,2,3] };
+        let currentShape = chords['C'];
+        function setChord(name) {
+            currentShape = chords[name];
+            document.querySelectorAll('.chord-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active');
+            document.querySelectorAll('.string').forEach((str, i) => {
+                const logicIdx = 3 - i; const fret = currentShape[logicIdx];
+                str.querySelectorAll('.finger-dot').forEach(d => d.style.display = 'none'); str.setAttribute('data-f', fret);
+                if(fret > 0) str.querySelector(`.finger-dot[data-show="${fret}"]`).style.display = 'block';
+            });
+        }
+        setTimeout(() => setChord('C'), 500);
+        function playString(idx) {
+            const fret = currentShape[idx]; const freq = openFreqs[idx] * Math.pow(2, fret/12);
+            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            osc.type = 'triangle'; osc.frequency.value = freq; osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime; gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.4, now+0.02); gain.gain.exponentialRampToValueAtTime(0.001, now+1.5);
+            osc.start(now); osc.stop(now+1.5);
+            const strEl = document.querySelectorAll('.string')[3-idx]; if(strEl) { strEl.classList.add('vibrating'); setTimeout(()=>strEl.classList.remove('vibrating'),200); }
+        }
+        const fretboard = document.getElementById('fretboard');
+        fretboard.addEventListener('mousemove', (e) => { if(e.buttons===1) checkStrum(e); });
+        fretboard.addEventListener('touchmove', (e) => { e.preventDefault(); checkStrum(e.touches[0]); }, {passive:false});
+        function checkStrum(p) { const el = document.elementFromPoint(p.clientX, p.clientY); if(el && el.classList.contains('string') && !el.classList.contains('vibrating')) playString(parseInt(el.getAttribute('data-s'))); }
+        document.querySelectorAll('.string').forEach(s => s.addEventListener('mousedown', ()=>playString(parseInt(s.getAttribute('data-s')))));
+
+        // --- 5. CALENDARIO ---
+        let currentDate = new Date();
+        const monthYearEl = document.getElementById('monthYear'); const calendarGrid = document.getElementById('calendarGrid');
+        const modal = document.getElementById('noteModal'); const noteText = document.getElementById('noteText');
+        let selectedDateKey = null; let allNotes = {};
+        if(database) database.ref('calendario_notas').on('value', (s) => { allNotes = s.val() || {}; renderCalendar(); });
+        function renderCalendar() {
+            const year = currentDate.getFullYear(); const month = currentDate.getMonth();
+            monthYearEl.innerText = new Date(year, month).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            calendarGrid.innerHTML = '';
+            ['D','L','M','X','J','V','S'].forEach(d => { const el = document.createElement('div'); el.innerText=d; el.style.color='#777'; calendarGrid.appendChild(el); });
+            for(let i=0; i<new Date(year, month, 1).getDay(); i++) calendarGrid.appendChild(document.createElement('div'));
+            for(let i=1; i<=new Date(year, month+1, 0).getDate(); i++) {
+                const cell = document.createElement('div'); cell.className = 'day-cell'; cell.innerText = i;
+                const key = `${i}-${month}-${year}`;
+                if(i===new Date().getDate() && month===new Date().getMonth()) cell.classList.add('today');
+                if(allNotes[key]) cell.classList.add('has-note');
+                cell.onclick = () => { selectedDateKey = key; document.getElementById('modalDateTitle').innerText = key.replace(/-/g, '/'); noteText.value = allNotes[key] || ''; modal.style.display = 'flex'; };
+                calendarGrid.appendChild(cell);
+            }
+        }
+        function changeMonth(d) { currentDate.setMonth(currentDate.getMonth()+d); renderCalendar(); }
+        function closeModal() { modal.style.display = 'none'; }
+        function saveNote() { const val = noteText.value.trim(); if(val) database.ref('calendario_notas/'+selectedDateKey).set(val); else database.ref('calendario_notas/'+selectedDateKey).remove(); closeModal(); }
+        renderCalendar();
+
+        // --- 6. GA-TAROT ---
+        const deck = [
+            { image: "Michichay.jpeg", name: "El Protagonista", meaning: "Como Michichay, hoy eres el centro de la historia. ¡Brilla con tu luz propia!" },
+            { image: "Fotooo.jpeg", name: "La Musa (Tú)", meaning: "La carta más bella. Hoy irradias arte e inspiración. El universo te sonríe.💕" },
+            { image: "Gato Drogo.jpeg", name: "El Gato Drogo", meaning: "Estás en las nubes, soñando despierta. Déjate llevar por la imaginación." },
+            { image: "Gato Cachondo.jpeg", name: "Pura Pasión", meaning: "Fuego en el aire. Te sientes magnética. Cuidado con lo que deseas." },
+            { image: "Trio bandido.jpeg", name: "Los Cómplices", meaning: "Amistad y travesuras. Ríete de todo con los tuyos." },
+            { image: "Gato pinguiño.jpeg", name: "El Elegante", meaning: "Tienes un estilo único. Acepta tu rareza, es tu superpoder." },
+            { image: "Gato berrako.jpeg", name: "La Jefa", meaning: "Hoy mandas tú. Tienes la fuerza para lograr lo que quieras." }
+        ];
+        function flipCard() {
+            const cardEl = document.getElementById('dailyCard'); if(cardEl.classList.contains('flipped')) return;
+            const idx = Math.abs(new Date().toDateString().split('').reduce((a,b)=>a+b.charCodeAt(0),0)) % deck.length;
+            const data = deck[idx];
+            document.getElementById('tarotImageSrc').src = data.image; 
+            document.getElementById('tarotName').innerText = data.name;
+            document.getElementById('tarotMeaning').innerText = data.meaning;
+            cardEl.classList.add('flipped');
+            document.getElementById('tarot-date').innerText = "Predicción gatuna para el " + new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+        }
+
         // --- 7. 3D UNIVERSO ---
         let camera, scene, renderer, controls, wordGroup, starField;
         const container = document.getElementById('scene-container');
@@ -599,7 +663,6 @@
             wordGroup = new THREE.Group();
             const lMat = new THREE.LineBasicMaterial({color:0xff00ff, opacity:0.8, transparent:true});
             const pMat = new THREE.PointsMaterial({color:0xffffff, size:5, map:tex, transparent:true, blending:THREE.AdditiveBlending});
-            // SOFI (I AJUSTADA)
             const letters = [
                 [[0,30],[-20,30],[-20,0],[0,0],[0,-30],[-20,-30]], // S
                 [[-20,30],[0,30],[0,-30],[-20,-30],[-20,30]], // O
